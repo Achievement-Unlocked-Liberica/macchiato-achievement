@@ -1,6 +1,21 @@
 # Feature-Driven Folder Structure
 
-This project follows a feature-driven design pattern where each feature folder encapsulates different layers of functionality. This approach promotes modularity, encapsulation, single responsibility, reusability, and extensibility.
+This project follows a fea├── award/                   # Award system feature
+│   ├── components/          # Award-specific components
+│   ├── screens/             # Award screens
+│   ├── hooks/               # Award custom hooks
+│   ├── services/            # Award API services
+│   ├── types/               # Award TypeScript types
+│   └── models/              # Award data models
+│
+└── quest/                   # Quest system feature
+    ├── components/          # Quest-specific components
+    ├── screens/             # Quest screens
+    ├── hooks/               # Quest custom hooks
+    ├── services/            # Quest API services
+    ├── types/               # Quest TypeScript types
+    └── models/              # Quest data models
+```ven design pattern where each feature folder encapsulates different layers of functionality. This approach promotes modularity, encapsulation, single responsibility, reusability, and extensibility.
 
 ## 📁 Folder Structure
 
