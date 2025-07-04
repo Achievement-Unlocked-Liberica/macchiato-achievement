@@ -1,9 +1,10 @@
 import React, { useRef } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, Alert } from 'react-native';
+import { View, Text, ScrollView, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import RegistrationForm, { RegistrationFormRef } from '../components/RegistrationForm';
+import { CancelButton, SubmitButton } from '../../common/components';
 
 type RootStackParamList = {
   Main: undefined;
@@ -17,7 +18,7 @@ interface FormData {
   email: string;
   firstName: string;
   lastName: string;
-  birthdate: string;
+  birthdate: Date | null;
 }
 
 export default function RegistrationScreen() {
@@ -79,19 +80,8 @@ export default function RegistrationScreen() {
       {/* Footer Section */}
       <View className="bg-white py-4 px-6 border-t border-gray-200">
         <View className="flex-row justify-center gap-4">
-          <TouchableOpacity 
-            className="bg-gray-500 px-8 py-3 rounded-lg min-w-[120px]" 
-            onPress={handleCancel}
-          >
-            <Text className="text-white text-base font-semibold text-center">Cancel</Text>
-          </TouchableOpacity>
-          
-          <TouchableOpacity 
-            className="bg-yellow-400 px-8 py-3 rounded-lg min-w-[120px]" 
-            onPress={handleSubmit}
-          >
-            <Text className="text-gray-900 text-base font-semibold text-center">Submit</Text>
-          </TouchableOpacity>
+          <CancelButton onPress={handleCancel} />
+          <SubmitButton onPress={handleSubmit} />
         </View>
       </View>
     </SafeAreaView>

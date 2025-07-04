@@ -2,6 +2,8 @@ import React from 'react';
 import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+import { faRightToBracket } from '@fortawesome/free-solid-svg-icons';
 
 type RootStackParamList = {
   Main: undefined;
@@ -28,14 +30,16 @@ export default function MainHeaderComponent() {
       
       {/* Header Title */}
       <Text style={styles.title}>
-        Main Header
+        Achievement Unlocked
       </Text>
       
       {/* Sign In Button */}
       <TouchableOpacity style={styles.button} onPress={handleSignInPress}>
-        <Text style={styles.buttonText}>
-          Sign In | Register
-        </Text>
+        <FontAwesomeIcon 
+          icon={faRightToBracket} 
+          size={18} 
+          color="#0F1620" 
+        />
       </TouchableOpacity>
     </View>
   );
@@ -59,16 +63,15 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '600',
     flex: 1,
-    textAlign: 'center',
+    textAlign: 'left',
+    marginLeft: 12,
   },
   button: {
     backgroundColor: '#fac31e',
-    paddingHorizontal: 16,
-    paddingVertical: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
     borderRadius: 6,
-  },
-  buttonText: {
-    color: '#0F1620',
-    fontWeight: '600',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
