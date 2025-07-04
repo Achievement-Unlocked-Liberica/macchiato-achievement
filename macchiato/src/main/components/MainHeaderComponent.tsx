@@ -1,6 +1,22 @@
+import React from 'react';
 import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
+
+type RootStackParamList = {
+  Main: undefined;
+  Registration: undefined;
+};
+
+type NavigationProp = StackNavigationProp<RootStackParamList>;
 
 export default function MainHeaderComponent() {
+  const navigation = useNavigation<NavigationProp>();
+
+  const handleSignInPress = () => {
+    navigation.navigate('Registration');
+  };
+
   return (
     <View style={styles.container}>
       {/* Logo */}
@@ -16,7 +32,7 @@ export default function MainHeaderComponent() {
       </Text>
       
       {/* Sign In Button */}
-      <TouchableOpacity style={styles.button}>
+      <TouchableOpacity style={styles.button} onPress={handleSignInPress}>
         <Text style={styles.buttonText}>
           Sign In | Register
         </Text>

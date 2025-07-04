@@ -15,10 +15,19 @@ macchiato/                          # Main project folder
 │   │   ├── screens/               # Main screens
 │   │   │   └── MainScreen.tsx
 │   │   └── README.md              # Main feature docs
+│   ├── user/                      # User feature (✅ COMPLETED)
+│   │   ├── components/            # User components
+│   │   │   └── RegistrationForm.tsx  # Registration form with validation
+│   │   ├── screens/               # User screens
+│   │   │   └── RegistrationScreen.tsx # Complete registration screen
+│   │   ├── hooks/                 # User hooks
+│   │   ├── models/                # User models
+│   │   ├── services/              # User services
+│   │   ├── types/                 # User types
+│   │   └── README.md              # User feature documentation
 │   ├── common/                    # Shared components
 │   ├── achievement/               # Achievement feature
 │   ├── challenge/                 # Challenge feature
-│   ├── user/                      # User feature
 │   ├── character/                 # Character feature
 │   ├── journey/                   # Journey feature
 │   ├── award/                     # Award feature
@@ -28,9 +37,10 @@ macchiato/                          # Main project folder
 │   │   ├── gifs/
 │   │   ├── videos/
 │   │   ├── icons/
+│   │   │   └── au icon xs.jpg     # App logo
 │   │   └── templates/
 │   └── README.md                  # Folder structure docs
-├── App.tsx                        # Main app entry point
+├── App.tsx                        # Main app entry point with navigation
 ├── package.json                   # Dependencies (updated)
 ├── babel.config.js                # Babel config for NativeWind
 ├── metro.config.js                # Metro config for NativeWind
@@ -45,6 +55,21 @@ macchiato/                          # Main project folder
 - **Entry Point**: `macchiato/App.tsx`
 - **Main Source**: `macchiato/src/`
 - **Main Screen**: `macchiato/src/main/screens/MainScreen.tsx`
+- **Navigation**: React Navigation stack with Main and Registration screens
+
+## ✅ **Completed Features**
+
+### 🔐 User Registration System
+- **RegistrationForm Component**: Reusable form with validation
+  - Username, email, first name, last name, birthdate fields
+  - Real-time validation with error messages
+  - Styled with NativeWind classes
+- **RegistrationScreen**: Complete screen with header, content, and footer
+  - Navigation from main header "Sign In | Register" button
+  - Cancel and Submit buttons with confirmation dialogs
+  - Success message and navigation back to main screen
+- **Form Validation**: Client-side validation for all fields
+- **Navigation Integration**: Seamless navigation between screens
 
 ## 📦 **Installed Dependencies**
 
