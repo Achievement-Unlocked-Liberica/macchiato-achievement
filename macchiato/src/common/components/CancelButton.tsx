@@ -51,7 +51,7 @@ export default function CancelButton({
 
   return (
     <TouchableOpacity 
-      className={`bg-gray-500 rounded-lg flex-row items-center justify-center gap-2 ${getSizeClasses()} ${
+      className={`bg-primary-600 rounded-lg flex-row items-center justify-center gap-2 ${getSizeClasses()} ${
         disabled ? 'opacity-50' : ''
       }`}
       onPress={onPress}
@@ -60,9 +60,9 @@ export default function CancelButton({
       <FontAwesomeIcon 
         icon={faXmark} 
         size={getIconSize()} 
-        color="white" 
+        color="#FCFCFC" 
       />
-      <Text className={`text-white font-semibold ${getTextSize()}`}>
+      <Text className={`text-text-primary font-semibold ${getTextSize()}`}>
         {text}
       </Text>
     </TouchableOpacity>

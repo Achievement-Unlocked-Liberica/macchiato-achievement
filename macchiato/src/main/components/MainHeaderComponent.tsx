@@ -38,7 +38,7 @@ export default function MainHeaderComponent() {
         <FontAwesomeIcon 
           icon={faRightToBracket} 
           size={18} 
-          color="#0F1620" 
+          color="#171717" 
         />
       </TouchableOpacity>
     </View>
@@ -52,14 +52,14 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: 16,
     paddingVertical: 12,
-    backgroundColor: '#0F1620',
+    backgroundColor: '#1E252C', // background.primary
   },
   logo: {
     width: 40,
     height: 40,
   },
   title: {
-    color: 'white',
+    color: '#FCFCFC', // text.primary
     fontSize: 18,
     fontWeight: '600',
     flex: 1,
@@ -67,7 +67,7 @@ const styles = StyleSheet.create({
     marginLeft: 12,
   },
   button: {
-    backgroundColor: '#fac31e',
+    backgroundColor: '#F8C825', // accent.500
     paddingHorizontal: 12,
     paddingVertical: 10,
     borderRadius: 6,

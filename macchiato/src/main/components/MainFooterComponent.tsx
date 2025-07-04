@@ -14,12 +14,12 @@ const styles = StyleSheet.create({
   container: {
     paddingHorizontal: 16,
     paddingVertical: 12,
-    backgroundColor: '#0F1620',
+    backgroundColor: '#2F353C', // background.secondary
     alignItems: 'center',
     justifyContent: 'center',
   },
   title: {
-    color: 'white',
+    color: '#FCFCFC', // text.primary
     fontSize: 16,
     fontWeight: '600',
   },

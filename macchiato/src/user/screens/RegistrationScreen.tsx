@@ -66,19 +66,19 @@ export default function RegistrationScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
+    <SafeAreaView className="flex-1 bg-background-primary">
       {/* Header Section */}
-      <View className="bg-gray-800 py-4 px-6 items-center">
-        <Text className="text-white text-xl font-semibold">Sign In | Register</Text>
+      <View className="bg-background-secondary py-4 px-6 items-center">
+        <Text className="text-text-primary text-xl font-semibold">Sign In | Register</Text>
       </View>
 
       {/* Content Section */}
-      <ScrollView className="flex-1 bg-gray-50" showsVerticalScrollIndicator={false}>
+      <ScrollView className="flex-1 bg-background-tertiary" showsVerticalScrollIndicator={false}>
         <RegistrationForm ref={formRef} onSubmit={handleFormSubmit} />
       </ScrollView>
 
       {/* Footer Section */}
-      <View className="bg-white py-4 px-6 border-t border-gray-200">
+      <View className="bg-background-secondary py-4 px-6 border-t border-border-secondary">
         <View className="flex-row justify-center gap-4">
           <CancelButton onPress={handleCancel} />
           <SubmitButton onPress={handleSubmit} />

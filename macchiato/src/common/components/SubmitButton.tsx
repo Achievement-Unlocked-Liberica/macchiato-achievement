@@ -55,7 +55,7 @@ export default function SubmitButton({
 
   return (
     <TouchableOpacity 
-      className={`bg-yellow-400 rounded-lg flex-row items-center justify-center gap-2 ${getSizeClasses()} ${
+      className={`bg-accent-500 rounded-lg flex-row items-center justify-center gap-2 ${getSizeClasses()} ${
         isDisabled ? 'opacity-50' : ''
       }`}
       onPress={onPress}
@@ -64,9 +64,9 @@ export default function SubmitButton({
       <FontAwesomeIcon 
         icon={faCheck} 
         size={getIconSize()} 
-        color="#0F1620" 
+        color="#171717" 
       />
-      <Text className={`text-gray-900 font-semibold ${getTextSize()}`}>
+      <Text className={`text-text-inverse font-semibold ${getTextSize()}`}>
         {loading ? 'Loading...' : text}
       </Text>
     </TouchableOpacity>

@@ -175,7 +175,7 @@ const RegistrationForm = forwardRef<RegistrationFormRef, RegistrationFormProps>(
 
   // Error Alert Component
   const ErrorAlert = ({ message }: { message: string }) => (
-    <View className="bg-red-50 border border-red-200 rounded-lg p-3 mt-2 flex-row items-start">
+    <View className="bg-error-50 border border-error-200 rounded-lg p-3 mt-2 flex-row items-start">
       <View className="mr-2 mt-0.5">
         <FontAwesomeIcon 
           icon={faFaceFrown} 
@@ -183,20 +183,21 @@ const RegistrationForm = forwardRef<RegistrationFormRef, RegistrationFormProps>(
           color="#EF4444" 
         />
       </View>
-      <Text className="text-red-600 text-sm flex-1 leading-5">{message}</Text>
+      <Text className="text-error-600 text-sm flex-1 leading-5">{message}</Text>
     </View>
   );
 
   return (
-    <View className="p-6">
+    <View className="p-6 bg-background-primary">
       {/* Username Field */}
       <View className="mb-4">
-        <Text className="text-gray-700 font-medium mb-2 text-base">Username</Text>
+        <Text className="text-text-primary font-medium mb-2 text-base">Username</Text>
         <TextInput
-          className={`border rounded-lg px-4 py-3 text-base bg-white ${
-            errors.username ? 'border-red-500 border-2' : 'border-gray-300'
+          className={`border rounded-lg px-4 py-3 text-base bg-background-secondary text-text-primary ${
+            errors.username ? 'border-error-500 border-2' : 'border-border-secondary'
           }`}
           placeholder="Enter username (5-50 characters)"
+          placeholderTextColor="#9FB3C8"
           value={formData.username}
           onChangeText={(value) => handleInputChange('username', value)}
           autoCapitalize="none"
@@ -207,12 +208,13 @@ const RegistrationForm = forwardRef<RegistrationFormRef, RegistrationFormProps>(
 
       {/* Email Field */}
       <View className="mb-4">
-        <Text className="text-gray-700 font-medium mb-2 text-base">Email</Text>
+        <Text className="text-text-primary font-medium mb-2 text-base">Email</Text>
         <TextInput
-          className={`border rounded-lg px-4 py-3 text-base bg-white ${
-            errors.email ? 'border-red-500 border-2' : 'border-gray-300'
+          className={`border rounded-lg px-4 py-3 text-base bg-background-secondary text-text-primary ${
+            errors.email ? 'border-error-500 border-2' : 'border-border-secondary'
           }`}
           placeholder="Enter email address"
+          placeholderTextColor="#9FB3C8"
           value={formData.email}
           onChangeText={(value) => handleInputChange('email', value)}
           keyboardType="email-address"
@@ -223,12 +225,13 @@ const RegistrationForm = forwardRef<RegistrationFormRef, RegistrationFormProps>(
 
       {/* First Name Field */}
       <View className="mb-4">
-        <Text className="text-gray-700 font-medium mb-2 text-base">First Name</Text>
+        <Text className="text-text-primary font-medium mb-2 text-base">First Name</Text>
         <TextInput
-          className={`border rounded-lg px-4 py-3 text-base bg-white ${
-            errors.firstName ? 'border-red-500 border-2' : 'border-gray-300'
+          className={`border rounded-lg px-4 py-3 text-base bg-background-secondary text-text-primary ${
+            errors.firstName ? 'border-error-500 border-2' : 'border-border-secondary'
           }`}
           placeholder="Enter first name (max 50 characters)"
+          placeholderTextColor="#9FB3C8"
           value={formData.firstName}
           onChangeText={(value) => handleInputChange('firstName', value)}
           maxLength={50}
@@ -238,12 +241,13 @@ const RegistrationForm = forwardRef<RegistrationFormRef, RegistrationFormProps>(
 
       {/* Last Name Field */}
       <View className="mb-4">
-        <Text className="text-gray-700 font-medium mb-2 text-base">Last Name</Text>
+        <Text className="text-text-primary font-medium mb-2 text-base">Last Name</Text>
         <TextInput
-          className={`border rounded-lg px-4 py-3 text-base bg-white ${
-            errors.lastName ? 'border-red-500 border-2' : 'border-gray-300'
+          className={`border rounded-lg px-4 py-3 text-base bg-background-secondary text-text-primary ${
+            errors.lastName ? 'border-error-500 border-2' : 'border-border-secondary'
           }`}
           placeholder="Enter last name (max 50 characters)"
+          placeholderTextColor="#9FB3C8"
           value={formData.lastName}
           onChangeText={(value) => handleInputChange('lastName', value)}
           maxLength={50}
@@ -253,20 +257,20 @@ const RegistrationForm = forwardRef<RegistrationFormRef, RegistrationFormProps>(
 
       {/* Birthdate Field */}
       <View className="mb-4">
-        <Text className="text-gray-700 font-medium mb-2 text-base">Birthdate</Text>
+        <Text className="text-text-primary font-medium mb-2 text-base">Birthdate</Text>
         <TouchableOpacity
-          className={`border rounded-lg px-4 py-3 text-base bg-white flex-row items-center justify-between ${
-            errors.birthdate ? 'border-red-500 border-2' : 'border-gray-300'
+          className={`border rounded-lg px-4 py-3 text-base bg-background-secondary flex-row items-center justify-between ${
+            errors.birthdate ? 'border-error-500 border-2' : 'border-border-secondary'
           }`}
           onPress={showDatePickerModal}
         >
-          <Text className={`text-base ${formData.birthdate ? 'text-gray-900' : 'text-gray-400'}`}>
+          <Text className={`text-base ${formData.birthdate ? 'text-text-primary' : 'text-text-secondary'}`}>
             {formData.birthdate ? formatDate(formData.birthdate) : 'Select birthdate (must be 13+ years old)'}
           </Text>
           <FontAwesomeIcon 
             icon={faCalendarAlt} 
             size={16} 
-            color="#6B7280" 
+            color="#9FB3C8" 
           />
         </TouchableOpacity>
         {errors.birthdate && <ErrorAlert message={errors.birthdate} />}
