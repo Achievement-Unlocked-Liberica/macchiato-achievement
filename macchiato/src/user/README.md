@@ -1,22 +1,51 @@
-# User Registration Feature
+# User Authentication Feature
 
-This folder contains the user registration functionality for the application.
+This folder contains the user authentication functionality for the application, including sign in and registration.
 
 ## Components
+
+### SignInForm (`components/SignInForm.tsx`)
+A reusable form component for user sign in with the following features:
+- **Fields**: username, password
+- **Validation**: Required field validation with error messages
+- **Social Login**: Support for Google, Facebook, GitHub, LinkedIn, and Twitter/X
+- **Styling**: Uses NativeWind (TailwindCSS) classes with theme colors
+- **Ref Methods**: `submitForm()` and `resetForm()` for external control
+
+#### Form Fields:
+- **Username**: Text input (required)
+- **Password**: Secure text input with hidden characters (required)
+
+#### Buttons:
+- **Sign In**: Primary action button with icon
+- **Register**: Navigation to registration screen
+- **Social Login**: Five social platform buttons (Google, Facebook, GitHub, LinkedIn, Twitter/X)
+
+#### Usage:
+```tsx
+const formRef = useRef<SignInFormRef>(null);
+
+const handleSubmit = (formData: FormData) => {
+  console.log('Sign in data:', formData);
+};
+
+<SignInForm ref={formRef} onSubmit={handleSubmit} />
+```
 
 ### RegistrationForm (`components/RegistrationForm.tsx`)
 A reusable form component for user registration with the following features:
 - **Fields**: username, email, first name, last name, birthdate
-- **Validation**: Form validation with error messages
-- **Styling**: Uses NativeWind (TailwindCSS) classes
+- **Validation**: Comprehensive form validation with error messages
+- **Date Picker**: Native date picker for birthdate with age validation
+- **Styling**: Uses NativeWind (TailwindCSS) classes with theme colors
 - **Ref Methods**: `submitForm()` and `resetForm()` for external control
 
 #### Form Fields:
-- **Username**: Text input with minimum 3 characters
-- **Email**: Email input with email format validation
-- **First Name**: Required text input
-- **Last Name**: Required text input  
-- **Birthdate**: Text input expecting MM/DD/YYYY format
+- **Username**: Text input (5-50 characters, required)
+- **Email**: Email input with format validation (required)
+- **First Name**: Text input (max 50 characters, required)
+- **Last Name**: Text input (max 50 characters, required)
+- **Birthdate**: Date picker (must be 13+ years old, required)
 
 #### Usage:
 ```tsx
@@ -35,16 +64,33 @@ formRef.current?.submitForm();
 formRef.current?.resetForm();
 ```
 
+## Screens
+
+### SignInScreen (`screens/SignInScreen.tsx`)
+A complete screen for user sign in with:
+- **Header**: Displays "Sign In" title
+- **Content**: Contains the SignInForm component
+- **Footer**: Informational message
+- **Navigation**: Handles navigation and form submission
+- **Styling**: Uses NativeWind classes with theme colors
+
+#### Features:
+- Form validation through the SignInForm component
+- Success alerts for sign in
+- Automatic navigation back to main screen after successful sign in
+- Social login integration points
+
 ### RegistrationScreen (`screens/RegistrationScreen.tsx`)
 A complete screen for user registration with:
 - **Header**: Displays "Sign In | Register" title
-- **Content**: Contains the RegistrationForm component
-- **Footer**: Cancel and Submit buttons
+- **Content**: Contains the RegistrationForm component with date picker
+- **Footer**: Cancel and Submit buttons (reusable components)
 - **Navigation**: Handles navigation back to main screen
-- **Styling**: Uses NativeWind classes
+- **Styling**: Uses NativeWind classes with theme colors
 
 #### Features:
-- Form validation through the RegistrationForm component
+- Comprehensive form validation through the RegistrationForm component
+- Date picker with age validation (13+ years old)
 - Confirmation alerts for successful registration
 - Cancel confirmation dialog
 - Automatic navigation back to main screen after successful registration

@@ -8,6 +8,7 @@ import { faRightToBracket } from '@fortawesome/free-solid-svg-icons';
 type RootStackParamList = {
   Main: undefined;
   Registration: undefined;
+  SignIn: undefined;
 };
 
 type NavigationProp = StackNavigationProp<RootStackParamList>;
@@ -16,7 +17,7 @@ export default function MainHeaderComponent() {
   const navigation = useNavigation<NavigationProp>();
 
   const handleSignInPress = () => {
-    navigation.navigate('Registration');
+    navigation.navigate('SignIn');
   };
 
   return (
@@ -37,9 +38,10 @@ export default function MainHeaderComponent() {
       <TouchableOpacity style={styles.button} onPress={handleSignInPress}>
         <FontAwesomeIcon 
           icon={faRightToBracket} 
-          size={18} 
+          size={16} 
           color="#171717" 
         />
+        <Text style={styles.buttonText}>Sign In</Text>
       </TouchableOpacity>
     </View>
   );
@@ -73,5 +75,12 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     alignItems: 'center',
     justifyContent: 'center',
+    flexDirection: 'row',
+    gap: 6,
+  },
+  buttonText: {
+    color: '#171717', // text.inverse
+    fontSize: 14,
+    fontWeight: '600',
   },
 });
