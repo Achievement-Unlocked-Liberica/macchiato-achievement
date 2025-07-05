@@ -61,6 +61,30 @@ const SignInForm = forwardRef<SignInFormRef, SignInFormProps>(({ onSubmit }, ref
     return Object.keys(newErrors).length === 0;
   };
 
+  const validateField = (field: keyof FormData): boolean => {
+    let fieldError: string | undefined;
+
+    switch (field) {
+      case 'username':
+        if (!formData.username.trim()) {
+          fieldError = 'Username is required';
+        }
+        break;
+      case 'password':
+        if (!formData.password.trim()) {
+          fieldError = 'Password is required';
+        }
+        break;
+    }
+
+    setErrors(prev => ({
+      ...prev,
+      [field]: fieldError,
+    }));
+
+    return !fieldError;
+  };
+
   const handleSubmit = () => {
     if (validateForm()) {
       onSubmit(formData);
@@ -81,6 +105,7 @@ const SignInForm = forwardRef<SignInFormRef, SignInFormProps>(({ onSubmit }, ref
   }));
 
   const handleInputChange = (field: keyof FormData, value: string) => {
+    // Update state
     setFormData(prev => ({
       ...prev,
       [field]: value,

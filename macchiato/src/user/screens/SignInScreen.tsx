@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import SignInForm, { SignInFormRef } from '../components/SignInForm';
+import { CancelButton } from '../../common/components';
 
 type RootStackParamList = {
   Main: undefined;
@@ -39,6 +40,10 @@ export default function SignInScreen() {
     );
   };
 
+  const handleCancel = () => {
+    navigation.navigate('Main');
+  };
+
   return (
     <SafeAreaView className="flex-1 bg-background-primary">
       {/* Header Section */}
@@ -52,10 +57,13 @@ export default function SignInScreen() {
       </ScrollView>
 
       {/* Footer Section */}
-      <View className="bg-background-secondary py-3 px-6 border-t border-border-secondary">
-        <Text className="text-text-secondary text-center text-sm">
+      <View className="bg-background-secondary py-4 px-6 border-t border-border-secondary">
+        <Text className="text-text-secondary text-center text-sm mb-4">
           Sign in to access your account
         </Text>
+        <View className="flex-row justify-center">
+          <CancelButton onPress={handleCancel} />
+        </View>
       </View>
     </SafeAreaView>
   );
