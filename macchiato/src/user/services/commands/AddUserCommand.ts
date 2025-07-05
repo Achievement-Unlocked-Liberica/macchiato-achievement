@@ -8,6 +8,7 @@
 export interface AddUserCommand {
   username: string;
   email: string;
+  password: string;
   firstName: string;
   lastName: string;
   birthDate: string; // Format: YYYY-MM-DD

@@ -16,7 +16,10 @@ type NavigationProp = StackNavigationProp<RootStackParamList>;
 
 interface FormData {
   username: string;
+  password: string;
+  passwordConfirmation: string;
   email: string;
+  emailConfirmation: string;
   firstName: string;
   lastName: string;
   birthdate: Date | null;
@@ -43,6 +46,7 @@ export default function RegistrationScreen() {
       const addUserCommand: AddUserCommand = {
         username: formData.username.trim(),
         email: formData.email.trim(),
+        password: formData.password.trim(),
         firstName: formData.firstName.trim(),
         lastName: formData.lastName.trim(),
         birthDate: UserService.formatDateForApi(formData.birthdate),

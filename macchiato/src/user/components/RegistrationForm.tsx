@@ -1,8 +1,8 @@
 import React, { useState, forwardRef, useImperativeHandle } from 'react';
-import { View, Text, TextInput, Alert, TouchableOpacity, Platform } from 'react-native';
+import { View, Text, TextInput, Alert, TouchableOpacity } from 'react-native';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faFaceFrown, faCalendarAlt } from '@fortawesome/free-regular-svg-icons';
-import DateTimePicker from '@react-native-community/datetimepicker';
+import { CustomDatePicker } from '../../common/components';
 
 interface RegistrationFormProps {
   onSubmit: (formData: FormData) => void;
@@ -15,7 +15,10 @@ export interface RegistrationFormRef {
 
 interface FormData {
   username: string;
+  password: string;
+  passwordConfirmation: string;
   email: string;
+  emailConfirmation: string;
   firstName: string;
   lastName: string;
   birthdate: Date | null;
@@ -23,7 +26,10 @@ interface FormData {
 
 interface FormErrors {
   username?: string;
+  password?: string;
+  passwordConfirmation?: string;
   email?: string;
+  emailConfirmation?: string;
   firstName?: string;
   lastName?: string;
   birthdate?: string;
@@ -32,7 +38,10 @@ interface FormErrors {
 const RegistrationForm = forwardRef<RegistrationFormRef, RegistrationFormProps>(({ onSubmit }, ref) => {
   const [formData, setFormData] = useState<FormData>({
     username: '',
+    password: '',
+    passwordConfirmation: '',
     email: '',
+    emailConfirmation: '',
     firstName: '',
     lastName: '',
     birthdate: null,
@@ -54,12 +63,35 @@ const RegistrationForm = forwardRef<RegistrationFormRef, RegistrationFormProps>(
       newErrors.username = 'Username must not exceed 50 characters';
     }
 
+    // Password validation
+    if (!formData.password.trim()) {
+      newErrors.password = 'Password is required';
+    } else if (formData.password.trim().length < 8) {
+      newErrors.password = 'Password must be at least 8 characters';
+    } else if (formData.password.trim().length > 100) {
+      newErrors.password = 'Password must not exceed 100 characters';
+    }
+
+    // Password confirmation validation
+    if (!formData.passwordConfirmation.trim()) {
+      newErrors.passwordConfirmation = 'Password confirmation is required';
+    } else if (formData.password !== formData.passwordConfirmation) {
+      newErrors.passwordConfirmation = 'Passwords do not match';
+    }
+
     // Email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!formData.email.trim()) {
       newErrors.email = 'Email is required';
     } else if (!emailRegex.test(formData.email.trim())) {
       newErrors.email = 'Please enter a valid email address';
+    }
+
+    // Email confirmation validation
+    if (!formData.emailConfirmation.trim()) {
+      newErrors.emailConfirmation = 'Email confirmation is required';
+    } else if (formData.email !== formData.emailConfirmation) {
+      newErrors.emailConfirmation = 'Email addresses do not match';
     }
 
     // First name validation
@@ -114,7 +146,10 @@ const RegistrationForm = forwardRef<RegistrationFormRef, RegistrationFormProps>(
   const resetForm = () => {
     setFormData({
       username: '',
+      password: '',
+      passwordConfirmation: '',
       email: '',
+      emailConfirmation: '',
       firstName: '',
       lastName: '',
       birthdate: null,
@@ -142,26 +177,29 @@ const RegistrationForm = forwardRef<RegistrationFormRef, RegistrationFormProps>(
     }
   };
 
-  const handleDateChange = (event: any, selectedDate?: Date) => {
-    setShowDatePicker(Platform.OS === 'ios');
-    if (selectedDate) {
-      setFormData(prev => ({
+  const handleDateChange = (date: Date) => {
+    setFormData(prev => ({
+      ...prev,
+      birthdate: date,
+    }));
+    
+    // Clear error when date is selected
+    if (errors.birthdate) {
+      setErrors(prev => ({
         ...prev,
-        birthdate: selectedDate,
+        birthdate: undefined,
       }));
-      
-      // Clear error when date is selected
-      if (errors.birthdate) {
-        setErrors(prev => ({
-          ...prev,
-          birthdate: undefined,
-        }));
-      }
     }
+    
+    setShowDatePicker(false);
   };
 
   const showDatePickerModal = () => {
     setShowDatePicker(true);
+  };
+
+  const closeDatePicker = () => {
+    setShowDatePicker(false);
   };
 
   const formatDate = (date: Date | null): string => {
@@ -206,6 +244,42 @@ const RegistrationForm = forwardRef<RegistrationFormRef, RegistrationFormProps>(
         {errors.username && <ErrorAlert message={errors.username} />}
       </View>
 
+      {/* Password Field */}
+      <View className="mb-4">
+        <Text className="text-text-primary font-medium mb-2 text-base">Password</Text>
+        <TextInput
+          className={`border rounded-lg px-4 py-3 text-base bg-background-secondary text-text-primary ${
+            errors.password ? 'border-error-500 border-2' : 'border-border-secondary'
+          }`}
+          placeholder="Enter password (min 8 characters)"
+          placeholderTextColor="#9FB3C8"
+          value={formData.password}
+          onChangeText={(value) => handleInputChange('password', value)}
+          secureTextEntry={true}
+          autoCapitalize="none"
+          maxLength={100}
+        />
+        {errors.password && <ErrorAlert message={errors.password} />}
+      </View>
+
+      {/* Password Confirmation Field */}
+      <View className="mb-4">
+        <Text className="text-text-primary font-medium mb-2 text-base">Confirm Password</Text>
+        <TextInput
+          className={`border rounded-lg px-4 py-3 text-base bg-background-secondary text-text-primary ${
+            errors.passwordConfirmation ? 'border-error-500 border-2' : 'border-border-secondary'
+          }`}
+          placeholder="Re-enter your password"
+          placeholderTextColor="#9FB3C8"
+          value={formData.passwordConfirmation}
+          onChangeText={(value) => handleInputChange('passwordConfirmation', value)}
+          secureTextEntry={true}
+          autoCapitalize="none"
+          maxLength={100}
+        />
+        {errors.passwordConfirmation && <ErrorAlert message={errors.passwordConfirmation} />}
+      </View>
+
       {/* Email Field */}
       <View className="mb-4">
         <Text className="text-text-primary font-medium mb-2 text-base">Email</Text>
@@ -221,6 +295,23 @@ const RegistrationForm = forwardRef<RegistrationFormRef, RegistrationFormProps>(
           autoCapitalize="none"
         />
         {errors.email && <ErrorAlert message={errors.email} />}
+      </View>
+
+      {/* Email Confirmation Field */}
+      <View className="mb-4">
+        <Text className="text-text-primary font-medium mb-2 text-base">Confirm Email</Text>
+        <TextInput
+          className={`border rounded-lg px-4 py-3 text-base bg-background-secondary text-text-primary ${
+            errors.emailConfirmation ? 'border-error-500 border-2' : 'border-border-secondary'
+          }`}
+          placeholder="Re-enter your email address"
+          placeholderTextColor="#9FB3C8"
+          value={formData.emailConfirmation}
+          onChangeText={(value) => handleInputChange('emailConfirmation', value)}
+          keyboardType="email-address"
+          autoCapitalize="none"
+        />
+        {errors.emailConfirmation && <ErrorAlert message={errors.emailConfirmation} />}
       </View>
 
       {/* First Name Field */}
@@ -270,23 +361,20 @@ const RegistrationForm = forwardRef<RegistrationFormRef, RegistrationFormProps>(
           <FontAwesomeIcon 
             icon={faCalendarAlt} 
             size={16} 
-            color="#9FB3C8" 
+            color="#F8C825" 
           />
         </TouchableOpacity>
         {errors.birthdate && <ErrorAlert message={errors.birthdate} />}
         
-        {/* Date Picker Modal */}
-        {showDatePicker && (
-          <DateTimePicker
-            testID="dateTimePicker"
-            value={formData.birthdate || new Date()}
-            mode="date"
-            is24Hour={true}
-            display="default"
-            maximumDate={new Date()}
-            onChange={handleDateChange}
-          />
-        )}
+        {/* Custom Date Picker Component */}
+        <CustomDatePicker
+          visible={showDatePicker}
+          value={formData.birthdate}
+          maximumDate={new Date()}
+          onDateChange={handleDateChange}
+          onCancel={closeDatePicker}
+          title="Select Birthdate"
+        />
       </View>
     </View>
   );
