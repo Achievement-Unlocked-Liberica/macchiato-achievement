@@ -1,11 +1,16 @@
-import React, { useState, forwardRef, useImperativeHandle } from 'react';
+import React, { useState, forwardRef, useImperativeHandle, useEffect } from 'react';
 import { View, Text, TextInput, Alert, TouchableOpacity } from 'react-native';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faFaceFrown, faCalendarAlt } from '@fortawesome/free-regular-svg-icons';
 import { CustomDatePicker } from '../../common/components';
+import { useForm } from '../../common/hooks';
+import { RegistrationFormData, registrationValidationRules } from '../validation';
+import { useUserRegistration } from '../hooks';
+import { AddUserCommand } from '../services/commands/AddUserCommand';
 
 interface RegistrationFormProps {
-  onSubmit: (formData: FormData) => void;
+  onSubmit: (formData: RegistrationFormData) => void;
+  onLoadingChange?: (isLoading: boolean) => void;
 }
 
 export interface RegistrationFormRef {
@@ -13,148 +18,109 @@ export interface RegistrationFormRef {
   resetForm: () => void;
 }
 
-interface FormData {
-  username: string;
-  password: string;
-  passwordConfirmation: string;
-  email: string;
-  emailConfirmation: string;
-  firstName: string;
-  lastName: string;
-  birthdate: Date | null;
-}
+const initialFormData: RegistrationFormData = {
+  username: '',
+  password: '',
+  passwordConfirmation: '',
+  email: '',
+  emailConfirmation: '',
+  firstName: '',
+  lastName: '',
+  birthdate: null,
+};
 
-interface FormErrors {
-  username?: string;
-  password?: string;
-  passwordConfirmation?: string;
-  email?: string;
-  emailConfirmation?: string;
-  firstName?: string;
-  lastName?: string;
-  birthdate?: string;
-}
-
-const RegistrationForm = forwardRef<RegistrationFormRef, RegistrationFormProps>(({ onSubmit }, ref) => {
-  const [formData, setFormData] = useState<FormData>({
-    username: '',
-    password: '',
-    passwordConfirmation: '',
-    email: '',
-    emailConfirmation: '',
-    firstName: '',
-    lastName: '',
-    birthdate: null,
+const RegistrationForm = forwardRef<RegistrationFormRef, RegistrationFormProps>(({ onSubmit, onLoadingChange }, ref) => {
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  
+  // Use the form hook for state management and validation
+  const {
+    formData,
+    errors,
+    isValid,
+    isSubmitting,
+    setFieldValue,
+    validateForm,
+    reset,
+    handleSubmit: formHandleSubmit,
+  } = useForm<RegistrationFormData>({
+    initialValues: initialFormData,
+    validationRules: registrationValidationRules,
+    onSubmit: async (data) => {
+      console.log('📝 RegistrationForm onSubmit called');
+      console.log('📊 Form data:', JSON.stringify(data, null, 2));
+      
+      // Convert to API format
+      const apiData: AddUserCommand = {
+        username: data.username.trim(),
+        password: data.password.trim(),
+        email: data.email.trim(),
+        firstName: data.firstName.trim(),
+        lastName: data.lastName.trim(),
+        birthDate: data.birthdate!.toISOString().split('T')[0], // Format as YYYY-MM-DD
+      };
+      
+      console.log('🔄 Converted to API format:', JSON.stringify(apiData, null, 2));
+      
+      try {
+        const result = await registerUser(apiData);
+        console.log('✅ Registration API call successful:', result);
+        onSubmit(data);
+      } catch (error) {
+        console.error('❌ Registration API call failed in form onSubmit:');
+        if (error instanceof Error) {
+          console.error('  - Message:', error.message);
+          console.error('  - Stack:', error.stack);
+        } else {
+          console.error('  - Error:', error);
+        }
+        throw error; // Re-throw so handleSubmit can catch it
+      }
+    },
   });
 
-  const [errors, setErrors] = useState<FormErrors>({});
-  const [showDatePicker, setShowDatePicker] = useState(false);
+  // Use user registration hook for API calls
+  const { loading: registrationLoading, error: registrationError, registerUser } = useUserRegistration();
 
-  const validateForm = (): boolean => {
-    const newErrors: FormErrors = {};
-    const today = new Date();
+  // Notify parent about loading state changes
+  const totalLoading = isSubmitting || registrationLoading;
+  useEffect(() => {
+    onLoadingChange?.(totalLoading);
+  }, [totalLoading, onLoadingChange]);
 
-    // Username validation
-    if (!formData.username.trim()) {
-      newErrors.username = 'Username is required';
-    } else if (formData.username.trim().length < 5) {
-      newErrors.username = 'Username must be at least 5 characters';
-    } else if (formData.username.trim().length > 50) {
-      newErrors.username = 'Username must not exceed 50 characters';
+  const handleSubmit = async () => {
+    console.log('🎯 RegistrationForm handleSubmit called');
+    console.log('📊 Current state - isSubmitting:', isSubmitting, 'registrationLoading:', registrationLoading);
+    
+    // Prevent duplicate submissions
+    if (isSubmitting || registrationLoading) {
+      console.log('⏸️ Submission already in progress, ignoring duplicate call');
+      return;
     }
-
-    // Password validation
-    if (!formData.password.trim()) {
-      newErrors.password = 'Password is required';
-    } else if (formData.password.trim().length < 8) {
-      newErrors.password = 'Password must be at least 8 characters';
-    } else if (formData.password.trim().length > 100) {
-      newErrors.password = 'Password must not exceed 100 characters';
-    }
-
-    // Password confirmation validation
-    if (!formData.passwordConfirmation.trim()) {
-      newErrors.passwordConfirmation = 'Password confirmation is required';
-    } else if (formData.password !== formData.passwordConfirmation) {
-      newErrors.passwordConfirmation = 'Passwords do not match';
-    }
-
-    // Email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!formData.email.trim()) {
-      newErrors.email = 'Email is required';
-    } else if (!emailRegex.test(formData.email.trim())) {
-      newErrors.email = 'Please enter a valid email address';
-    }
-
-    // Email confirmation validation
-    if (!formData.emailConfirmation.trim()) {
-      newErrors.emailConfirmation = 'Email confirmation is required';
-    } else if (formData.email !== formData.emailConfirmation) {
-      newErrors.emailConfirmation = 'Email addresses do not match';
-    }
-
-    // First name validation
-    if (!formData.firstName.trim()) {
-      newErrors.firstName = 'First name is required';
-    } else if (formData.firstName.trim().length > 50) {
-      newErrors.firstName = 'First name must not exceed 50 characters';
-    }
-
-    // Last name validation
-    if (!formData.lastName.trim()) {
-      newErrors.lastName = 'Last name is required';
-    } else if (formData.lastName.trim().length > 50) {
-      newErrors.lastName = 'Last name must not exceed 50 characters';
-    }
-
-    // Birthdate validation
-    if (!formData.birthdate) {
-      newErrors.birthdate = 'Birthdate is required';
-    } else {
-      const birthDate = formData.birthdate;
-      
-      // Check if date is in the future
-      if (birthDate > today) {
-        newErrors.birthdate = 'Birthdate cannot be in the future';
+    
+    try {
+      await formHandleSubmit();
+      console.log('✅ Form submission completed successfully');
+    } catch (error) {
+      console.error('💥 Registration submission error in handleSubmit:');
+      if (error instanceof Error) {
+        console.error('  - Error name:', error.name);
+        console.error('  - Error message:', error.message);
+        console.error('  - Error stack:', error.stack);
       } else {
-        // Calculate age
-        const age = today.getFullYear() - birthDate.getFullYear();
-        const monthDiff = today.getMonth() - birthDate.getMonth();
-        const dayDiff = today.getDate() - birthDate.getDate();
-        
-        const actualAge = monthDiff < 0 || (monthDiff === 0 && dayDiff < 0) ? age - 1 : age;
-        
-        if (actualAge < 13) {
-          newErrors.birthdate = 'You must be at least 13 years old to register';
-        }
+        console.error('  - Unknown error type:', typeof error);
+        console.error('  - Error value:', error);
       }
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleSubmit = () => {
-    if (validateForm()) {
-      onSubmit(formData);
-    } else {
-      Alert.alert('Validation Error', 'Please correct the errors and try again.');
+      
+      Alert.alert(
+        'Registration Failed', 
+        error instanceof Error ? error.message : 'An unexpected error occurred. Please try again.'
+      );
     }
   };
 
   const resetForm = () => {
-    setFormData({
-      username: '',
-      password: '',
-      passwordConfirmation: '',
-      email: '',
-      emailConfirmation: '',
-      firstName: '',
-      lastName: '',
-      birthdate: null,
-    });
-    setErrors({});
+    reset();
+    setShowDatePicker(false);
   };
 
   useImperativeHandle(ref, () => ({
@@ -162,35 +128,12 @@ const RegistrationForm = forwardRef<RegistrationFormRef, RegistrationFormProps>(
     resetForm: resetForm,
   }));
 
-  const handleInputChange = (field: keyof FormData, value: string) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: value,
-    }));
-    
-    // Clear error when user starts typing
-    if (errors[field]) {
-      setErrors(prev => ({
-        ...prev,
-        [field]: undefined,
-      }));
-    }
+  const handleInputChange = (field: keyof RegistrationFormData, value: string) => {
+    setFieldValue(field, value);
   };
 
   const handleDateChange = (date: Date) => {
-    setFormData(prev => ({
-      ...prev,
-      birthdate: date,
-    }));
-    
-    // Clear error when date is selected
-    if (errors.birthdate) {
-      setErrors(prev => ({
-        ...prev,
-        birthdate: undefined,
-      }));
-    }
-    
+    setFieldValue('birthdate', date);
     setShowDatePicker(false);
   };
 

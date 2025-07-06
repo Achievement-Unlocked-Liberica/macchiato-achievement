@@ -5,6 +5,8 @@
  * base URL, headers, and common request settings.
  */
 
+import { secureDevFetch, logNetworkError, isTrustedDevIP } from '../utils/networkSecurity';
+
 export const API_CONFIG = {
   BASE_URL: 'http://192.168.0.14:8080',
   ENDPOINTS: {
@@ -32,7 +34,50 @@ export const getCommonFetchOptions = (): RequestInit => ({
  * Helper function to build full API URLs
  */
 export const buildApiUrl = (endpoint: string): string => {
-  return `${API_CONFIG.BASE_URL}${endpoint}`;
+  const fullUrl = `${API_CONFIG.BASE_URL}${endpoint}`;
+  console.log('🔗 Building API URL:', {
+    baseUrl: API_CONFIG.BASE_URL,
+    endpoint: endpoint,
+    fullUrl: fullUrl,
+    isTrustedDev: isTrustedDevIP(fullUrl)
+  });
+  return fullUrl;
+};
+
+/**
+ * Enhanced API fetch function that handles development SSL issues
+ */
+export const apiSecureFetch = async (
+  url: string,
+  options: RequestInit = {}
+): Promise<Response> => {
+  console.log('🌐 apiSecureFetch called:', {
+    url,
+    method: options.method || 'GET',
+    hasBody: !!options.body
+  });
+
+  try {
+    const response = await secureDevFetch(url, {
+      ...getCommonFetchOptions(),
+      ...options,
+      headers: {
+        ...getCommonHeaders(),
+        ...options.headers,
+      }
+    });
+
+    console.log('✅ apiSecureFetch completed successfully:', {
+      status: response.status,
+      statusText: response.statusText,
+      contentType: response.headers.get('content-type')
+    });
+
+    return response;
+  } catch (error) {
+    logNetworkError(error, 'apiSecureFetch');
+    throw error;
+  }
 };
 
 /**

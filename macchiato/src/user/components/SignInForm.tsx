@@ -6,6 +6,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faRightToBracket, faUserPlus } from '@fortawesome/free-solid-svg-icons';
 import { faFaceFrown } from '@fortawesome/free-regular-svg-icons';
 import { faGoogle, faFacebookF, faGithub, faLinkedinIn } from '@fortawesome/free-brands-svg-icons';
+import { useForm } from '../../common/hooks';
+import { SignInFormData, signInValidationRules } from '../validation';
 
 type RootStackParamList = {
   Main: undefined;
@@ -16,7 +18,7 @@ type RootStackParamList = {
 type NavigationProp = StackNavigationProp<RootStackParamList>;
 
 interface SignInFormProps {
-  onSubmit: (formData: FormData) => void;
+  onSubmit: (formData: SignInFormData) => void;
 }
 
 export interface SignInFormRef {
@@ -24,79 +26,40 @@ export interface SignInFormRef {
   resetForm: () => void;
 }
 
-interface FormData {
-  username: string;
-  password: string;
-}
-
-interface FormErrors {
-  username?: string;
-  password?: string;
-}
+const initialFormData: SignInFormData = {
+  username: '',
+  password: '',
+};
 
 const SignInForm = forwardRef<SignInFormRef, SignInFormProps>(({ onSubmit }, ref) => {
   const navigation = useNavigation<NavigationProp>();
   
-  const [formData, setFormData] = useState<FormData>({
-    username: '',
-    password: '',
+  // Use the form hook for state management and validation
+  const {
+    formData,
+    errors,
+    setFieldValue,
+    validateForm,
+    reset,
+    handleSubmit: formHandleSubmit,
+  } = useForm<SignInFormData>({
+    initialValues: initialFormData,
+    validationRules: signInValidationRules,
+    onSubmit: async (data) => {
+      onSubmit(data);
+    },
   });
 
-  const [errors, setErrors] = useState<FormErrors>({});
-
-  const validateForm = (): boolean => {
-    const newErrors: FormErrors = {};
-
-    // Username validation
-    if (!formData.username.trim()) {
-      newErrors.username = 'Username is required';
-    }
-
-    // Password validation
-    if (!formData.password.trim()) {
-      newErrors.password = 'Password is required';
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const validateField = (field: keyof FormData): boolean => {
-    let fieldError: string | undefined;
-
-    switch (field) {
-      case 'username':
-        if (!formData.username.trim()) {
-          fieldError = 'Username is required';
-        }
-        break;
-      case 'password':
-        if (!formData.password.trim()) {
-          fieldError = 'Password is required';
-        }
-        break;
-    }
-
-    setErrors(prev => ({
-      ...prev,
-      [field]: fieldError,
-    }));
-
-    return !fieldError;
-  };
-
-  const handleSubmit = () => {
-    if (validateForm()) {
-      onSubmit(formData);
+  const handleSubmit = async () => {
+    try {
+      await formHandleSubmit();
+    } catch (error) {
+      console.error('Sign in submission error:', error);
     }
   };
 
   const resetForm = () => {
-    setFormData({
-      username: '',
-      password: '',
-    });
-    setErrors({});
+    reset();
   };
 
   useImperativeHandle(ref, () => ({
@@ -104,20 +67,8 @@ const SignInForm = forwardRef<SignInFormRef, SignInFormProps>(({ onSubmit }, ref
     resetForm: resetForm,
   }));
 
-  const handleInputChange = (field: keyof FormData, value: string) => {
-    // Update state
-    setFormData(prev => ({
-      ...prev,
-      [field]: value,
-    }));
-    
-    // Clear error when user starts typing
-    if (errors[field]) {
-      setErrors(prev => ({
-        ...prev,
-        [field]: undefined,
-      }));
-    }
+  const handleInputChange = (field: keyof SignInFormData, value: string) => {
+    setFieldValue(field, value);
   };
 
   const handleRegisterPress = () => {

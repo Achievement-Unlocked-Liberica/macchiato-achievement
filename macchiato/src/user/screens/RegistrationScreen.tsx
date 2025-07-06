@@ -5,7 +5,6 @@ import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import RegistrationForm, { RegistrationFormRef } from '../components/RegistrationForm';
 import { CancelButton, SubmitButton } from '../../common/components';
-import { UserService, AddUserCommand } from '../services';
 
 type RootStackParamList = {
   Main: undefined;
@@ -28,62 +27,33 @@ interface FormData {
 export default function RegistrationScreen() {
   const navigation = useNavigation<NavigationProp>();
   const formRef = useRef<RegistrationFormRef>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleFormSubmit = async (formData: FormData) => {
-    console.log('Registration form submitted:', formData);
+    console.log('📝 RegistrationScreen.handleFormSubmit - User registration completed successfully');
+    console.log('👤 User data:', {
+      username: formData.username,
+      email: formData.email,
+      firstName: formData.firstName,
+      lastName: formData.lastName,
+      hasBirthdate: !!formData.birthdate,
+    });
     
-    try {
-      setIsSubmitting(true);
-      
-      // Validate that birthdate is not null
-      if (!formData.birthdate) {
-        Alert.alert('Error', 'Please select a valid birthdate.');
-        return;
-      }
-      
-      // Build the AddUserCommand
-      const addUserCommand: AddUserCommand = {
-        username: formData.username.trim(),
-        email: formData.email.trim(),
-        password: formData.password.trim(),
-        firstName: formData.firstName.trim(),
-        lastName: formData.lastName.trim(),
-        birthDate: UserService.formatDateForApi(formData.birthdate),
-      };
-      
-      // Validate the command
-      UserService.validateAddUserCommand(addUserCommand);
-      
-      // Call the API
-      const result = await UserService.addUser(addUserCommand);
-      
-      console.log('User created successfully:', result);
-      
-      // Show success message and navigate back
-      Alert.alert(
-        'Registration Successful',
-        `Welcome ${formData.firstName}! Your account has been created.`,
-        [
-          {
-            text: 'OK',
-            onPress: () => navigation.navigate('Main'),
-          },
-        ]
-      );
-    } catch (error: any) {
-      console.error('Registration error:', error);
-      
-      let errorMessage = 'An error occurred during registration. Please try again.';
-      
-      if (error.message) {
-        errorMessage = error.message;
-      }
-      
-      Alert.alert('Registration Failed', errorMessage);
-    } finally {
-      setIsSubmitting(false);
-    }
+    // Show success message and navigate back
+    Alert.alert(
+      'Registration Successful',
+      `Welcome ${formData.firstName}! Your account has been created.`,
+      [
+        {
+          text: 'OK',
+          onPress: () => navigation.navigate('Main'),
+        },
+      ]
+    );
+  };
+
+  const handleLoadingChange = (loading: boolean) => {
+    setIsLoading(loading);
   };
 
   const handleCancel = () => {
@@ -118,14 +88,18 @@ export default function RegistrationScreen() {
 
       {/* Content Section */}
       <ScrollView className="flex-1 bg-background-tertiary" showsVerticalScrollIndicator={false}>
-        <RegistrationForm ref={formRef} onSubmit={handleFormSubmit} />
+        <RegistrationForm 
+          ref={formRef} 
+          onSubmit={handleFormSubmit} 
+          onLoadingChange={handleLoadingChange}
+        />
       </ScrollView>
 
       {/* Footer Section */}
       <View className="bg-background-secondary py-4 px-6 border-t border-border-secondary">
         <View className="flex-row justify-center gap-4">
-          <CancelButton onPress={handleCancel} disabled={isSubmitting} />
-          <SubmitButton onPress={handleSubmit} loading={isSubmitting} />
+          <CancelButton onPress={handleCancel} disabled={isLoading} />
+          <SubmitButton onPress={handleSubmit} loading={isLoading} />
         </View>
       </View>
     </SafeAreaView>
