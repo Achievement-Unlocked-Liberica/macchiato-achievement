@@ -5,6 +5,7 @@ import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import RegistrationForm, { RegistrationFormRef } from '../components/RegistrationForm';
 import { CancelButton, SubmitButton } from '../../common/components';
+import { RegistrationFormData } from '../validation';
 
 type RootStackParamList = {
   Main: undefined;
@@ -13,36 +14,22 @@ type RootStackParamList = {
 
 type NavigationProp = StackNavigationProp<RootStackParamList>;
 
-interface FormData {
-  username: string;
-  password: string;
-  passwordConfirmation: string;
-  email: string;
-  emailConfirmation: string;
-  firstName: string;
-  lastName: string;
-  birthdate: Date | null;
-}
-
 export default function RegistrationScreen() {
   const navigation = useNavigation<NavigationProp>();
   const formRef = useRef<RegistrationFormRef>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleFormSubmit = async (formData: FormData) => {
+  const handleFormSubmit = async (formData: RegistrationFormData) => {
     console.log('📝 RegistrationScreen.handleFormSubmit - User registration completed successfully');
     console.log('👤 User data:', {
       username: formData.username,
       email: formData.email,
-      firstName: formData.firstName,
-      lastName: formData.lastName,
-      hasBirthdate: !!formData.birthdate,
     });
     
     // Show success message and navigate back
     Alert.alert(
       'Registration Successful',
-      `Welcome ${formData.firstName}! Your account has been created.`,
+      `Welcome ${formData.username}! Your account has been created.`,
       [
         {
           text: 'OK',

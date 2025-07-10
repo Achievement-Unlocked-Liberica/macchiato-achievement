@@ -1,12 +1,11 @@
-import React, { useState, forwardRef, useImperativeHandle, useEffect } from 'react';
-import { View, Text, TextInput, Alert, TouchableOpacity } from 'react-native';
+import React, { forwardRef, useImperativeHandle, useEffect } from 'react';
+import { View, Text, TextInput, Alert } from 'react-native';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faFaceFrown, faCalendarAlt } from '@fortawesome/free-regular-svg-icons';
-import { CustomDatePicker } from '../../common/components';
+import { faFaceFrown } from '@fortawesome/free-regular-svg-icons';
 import { useForm } from '../../common/hooks';
 import { RegistrationFormData, registrationValidationRules } from '../validation';
 import { useUserRegistration } from '../hooks';
-import { AddUserCommand } from '../services/commands/AddUserCommand';
+import { RegisterUserCommand } from '../services/commands/RegisterUserCommand';
 
 interface RegistrationFormProps {
   onSubmit: (formData: RegistrationFormData) => void;
@@ -24,14 +23,9 @@ const initialFormData: RegistrationFormData = {
   passwordConfirmation: '',
   email: '',
   emailConfirmation: '',
-  firstName: '',
-  lastName: '',
-  birthdate: null,
 };
 
 const RegistrationForm = forwardRef<RegistrationFormRef, RegistrationFormProps>(({ onSubmit, onLoadingChange }, ref) => {
-  const [showDatePicker, setShowDatePicker] = useState(false);
-  
   // Use the form hook for state management and validation
   const {
     formData,
@@ -50,13 +44,10 @@ const RegistrationForm = forwardRef<RegistrationFormRef, RegistrationFormProps>(
       console.log('📊 Form data:', JSON.stringify(data, null, 2));
       
       // Convert to API format
-      const apiData: AddUserCommand = {
+      const apiData: RegisterUserCommand = {
         username: data.username.trim(),
         password: data.password.trim(),
         email: data.email.trim(),
-        firstName: data.firstName.trim(),
-        lastName: data.lastName.trim(),
-        birthDate: data.birthdate!.toISOString().split('T')[0], // Format as YYYY-MM-DD
       };
       
       console.log('🔄 Converted to API format:', JSON.stringify(apiData, null, 2));
@@ -120,7 +111,6 @@ const RegistrationForm = forwardRef<RegistrationFormRef, RegistrationFormProps>(
 
   const resetForm = () => {
     reset();
-    setShowDatePicker(false);
   };
 
   useImperativeHandle(ref, () => ({
@@ -130,28 +120,6 @@ const RegistrationForm = forwardRef<RegistrationFormRef, RegistrationFormProps>(
 
   const handleInputChange = (field: keyof RegistrationFormData, value: string) => {
     setFieldValue(field, value);
-  };
-
-  const handleDateChange = (date: Date) => {
-    setFieldValue('birthdate', date);
-    setShowDatePicker(false);
-  };
-
-  const showDatePickerModal = () => {
-    setShowDatePicker(true);
-  };
-
-  const closeDatePicker = () => {
-    setShowDatePicker(false);
-  };
-
-  const formatDate = (date: Date | null): string => {
-    if (!date) return '';
-    return date.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
   };
 
   // Error Alert Component
@@ -255,69 +223,6 @@ const RegistrationForm = forwardRef<RegistrationFormRef, RegistrationFormProps>(
           autoCapitalize="none"
         />
         {errors.emailConfirmation && <ErrorAlert message={errors.emailConfirmation} />}
-      </View>
-
-      {/* First Name Field */}
-      <View className="mb-4">
-        <Text className="text-text-primary font-medium mb-2 text-base">First Name</Text>
-        <TextInput
-          className={`border rounded-lg px-4 py-3 text-base bg-background-secondary text-text-primary ${
-            errors.firstName ? 'border-error-500 border-2' : 'border-border-secondary'
-          }`}
-          placeholder="Enter first name (max 50 characters)"
-          placeholderTextColor="#9FB3C8"
-          value={formData.firstName}
-          onChangeText={(value) => handleInputChange('firstName', value)}
-          maxLength={50}
-        />
-        {errors.firstName && <ErrorAlert message={errors.firstName} />}
-      </View>
-
-      {/* Last Name Field */}
-      <View className="mb-4">
-        <Text className="text-text-primary font-medium mb-2 text-base">Last Name</Text>
-        <TextInput
-          className={`border rounded-lg px-4 py-3 text-base bg-background-secondary text-text-primary ${
-            errors.lastName ? 'border-error-500 border-2' : 'border-border-secondary'
-          }`}
-          placeholder="Enter last name (max 50 characters)"
-          placeholderTextColor="#9FB3C8"
-          value={formData.lastName}
-          onChangeText={(value) => handleInputChange('lastName', value)}
-          maxLength={50}
-        />
-        {errors.lastName && <ErrorAlert message={errors.lastName} />}
-      </View>
-
-      {/* Birthdate Field */}
-      <View className="mb-4">
-        <Text className="text-text-primary font-medium mb-2 text-base">Birthdate</Text>
-        <TouchableOpacity
-          className={`border rounded-lg px-4 py-3 text-base bg-background-secondary flex-row items-center justify-between ${
-            errors.birthdate ? 'border-error-500 border-2' : 'border-border-secondary'
-          }`}
-          onPress={showDatePickerModal}
-        >
-          <Text className={`text-base ${formData.birthdate ? 'text-text-primary' : 'text-text-secondary'}`}>
-            {formData.birthdate ? formatDate(formData.birthdate) : 'Select birthdate (must be 13+ years old)'}
-          </Text>
-          <FontAwesomeIcon 
-            icon={faCalendarAlt} 
-            size={16} 
-            color="#F8C825" 
-          />
-        </TouchableOpacity>
-        {errors.birthdate && <ErrorAlert message={errors.birthdate} />}
-        
-        {/* Custom Date Picker Component */}
-        <CustomDatePicker
-          visible={showDatePicker}
-          value={formData.birthdate}
-          maximumDate={new Date()}
-          onDateChange={handleDateChange}
-          onCancel={closeDatePicker}
-          title="Select Birthdate"
-        />
       </View>
     </View>
   );

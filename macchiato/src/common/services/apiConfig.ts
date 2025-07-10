@@ -11,6 +11,7 @@ export const API_CONFIG = {
   BASE_URL: 'http://192.168.0.14:8080',
   ENDPOINTS: {
     USER: '/api/cmd/user',
+    REGISTER: '/api/cmd/security/register',
   },
 } as const;
 

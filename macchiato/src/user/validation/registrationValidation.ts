@@ -3,7 +3,7 @@
  * Defines validation rules specific to user registration
  */
 
-import { ValidationRules, required, minLength, maxLength, email, matchField, notFutureDate, minAge } from '../../common/validation';
+import { ValidationRules, required, minLength, maxLength, email, matchField } from '../../common/validation';
 
 export interface RegistrationFormData {
   username: string;
@@ -11,9 +11,6 @@ export interface RegistrationFormData {
   passwordConfirmation: string;
   email: string;
   emailConfirmation: string;
-  firstName: string;
-  lastName: string;
-  birthdate: Date | null;
 }
 
 export const registrationValidationRules: ValidationRules = {
@@ -38,20 +35,5 @@ export const registrationValidationRules: ValidationRules = {
   emailConfirmation: [
     required,
     matchField('email', 'Email addresses do not match'),
-  ],
-  firstName: [
-    required,
-    maxLength(50, 'First name must not exceed 50 characters'),
-  ],
-  lastName: [
-    required,
-    maxLength(50, 'Last name must not exceed 50 characters'),
-  ],
-  birthdate: [
-    (value: Date | null) => {
-      if (!value) return 'Birthdate is required';
-    },
-    notFutureDate,
-    minAge(13),
   ],
 };
