@@ -12,6 +12,7 @@ export const API_CONFIG = {
   ENDPOINTS: {
     USER: '/api/cmd/user',
     REGISTER: '/api/cmd/security/register',
+    AUTH: '/api/cmd/security/auth',
   },
 } as const;
 

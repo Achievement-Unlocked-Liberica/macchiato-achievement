@@ -3,3 +3,4 @@
  */
 
 export * from './useUserRegistration';
+export * from './useAuthentication';

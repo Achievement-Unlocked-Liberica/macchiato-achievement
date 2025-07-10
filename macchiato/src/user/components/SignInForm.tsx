@@ -1,5 +1,5 @@
 import React, { useState, forwardRef, useImperativeHandle } from 'react';
-import { View, Text, TextInput, TouchableOpacity } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
@@ -8,6 +8,8 @@ import { faFaceFrown } from '@fortawesome/free-regular-svg-icons';
 import { faGoogle, faFacebookF, faGithub, faLinkedinIn } from '@fortawesome/free-brands-svg-icons';
 import { useForm } from '../../common/hooks';
 import { SignInFormData, signInValidationRules } from '../validation';
+import { useAuthentication } from '../hooks';
+import { AuthCredentialsCommand } from '../services/commands/AuthCredentialsCommand';
 
 type RootStackParamList = {
   Main: undefined;
@@ -33,6 +35,7 @@ const initialFormData: SignInFormData = {
 
 const SignInForm = forwardRef<SignInFormRef, SignInFormProps>(({ onSubmit }, ref) => {
   const navigation = useNavigation<NavigationProp>();
+  const { authenticate, loading, error } = useAuthentication();
   
   // Use the form hook for state management and validation
   const {
@@ -46,7 +49,42 @@ const SignInForm = forwardRef<SignInFormRef, SignInFormProps>(({ onSubmit }, ref
     initialValues: initialFormData,
     validationRules: signInValidationRules,
     onSubmit: async (data) => {
-      onSubmit(data);
+      console.log('📝 SignInForm onSubmit called');
+      console.log('📊 Form data:', JSON.stringify({ username: data.username, password: '[REDACTED]' }, null, 2));
+      
+      // Convert to API format
+      const credentials: AuthCredentialsCommand = {
+        username: data.username.trim(),
+        password: data.password.trim(),
+      };
+      
+      console.log('🔄 Converted to API format:', JSON.stringify({ username: credentials.username, password: '[REDACTED]' }, null, 2));
+      
+      try {
+        const result = await authenticate(credentials);
+        if (result && result.success) {
+          console.log('✅ Authentication successful:', result);
+          
+          // Show success popup with userKey and token
+          Alert.alert(
+            'Authentication Successful',
+            `User Key: ${result.data.userKey}\nToken: ${result.data.token.substring(0, 50)}...`,
+            [{ text: 'OK' }]
+          );
+          
+          // Call the onSubmit callback
+          onSubmit(data);
+        }
+      } catch (error: any) {
+        console.error('❌ Authentication failed in form onSubmit:', error);
+        
+        // Show error popup with the server error message
+        Alert.alert(
+          'Authentication Failed',
+          error.message || 'An error occurred during authentication',
+          [{ text: 'OK' }]
+        );
+      }
     },
   });
 
@@ -138,15 +176,22 @@ const SignInForm = forwardRef<SignInFormRef, SignInFormProps>(({ onSubmit }, ref
 
       {/* Sign In Button */}
       <TouchableOpacity 
-        className="bg-accent-500 rounded-lg py-3 px-4 flex-row items-center justify-center gap-2 mb-4"
+        className={`rounded-lg py-3 px-4 flex-row items-center justify-center gap-2 mb-4 ${
+          loading ? 'bg-accent-300' : 'bg-accent-500'
+        }`}
         onPress={handleSubmit}
+        disabled={loading}
       >
         <FontAwesomeIcon 
           icon={faRightToBracket} 
           size={16} 
-          color="#171717" 
+          color={loading ? "#9CA3AF" : "#171717"} 
         />
-        <Text className="text-text-inverse font-semibold text-base">Sign In</Text>
+        <Text className={`font-semibold text-base ${
+          loading ? 'text-gray-500' : 'text-text-inverse'
+        }`}>
+          {loading ? 'Signing In...' : 'Sign In'}
+        </Text>
       </TouchableOpacity>
 
       {/* Horizontal Line */}

@@ -1,6 +1,7 @@
 import { API_CONFIG, buildApiUrl, apiSecureFetch, ApiResponse, ApiError } from '../../common/services/apiConfig';
 import { AddUserCommand, AddUserResponse } from './commands/AddUserCommand';
 import { RegisterUserCommand, RegisterUserResponse } from './commands/RegisterUserCommand';
+import { AuthCredentialsCommand, AuthResponse } from './commands/AuthCredentialsCommand';
 
 /**
  * UserService
@@ -240,6 +241,132 @@ export class UserService {
   }
 
   /**
+   * Authenticate a user with username and password
+   * 
+   * @param command - The authentication credentials
+   * @returns Promise with the authentication response containing JWT token
+   * @throws ApiError if the request fails
+   */
+  static async authenticate(command: AuthCredentialsCommand): Promise<AuthResponse> {
+    console.log('🚀 UserService.authenticate() called');
+    console.log('📝 Request payload:', JSON.stringify({ username: command.username, password: '[REDACTED]' }, null, 2));
+    
+    try {
+      const url = buildApiUrl(API_CONFIG.ENDPOINTS.AUTH);
+      console.log('🌐 API URL:', url);
+      
+      const requestOptions: RequestInit = {
+        method: 'POST',
+        body: JSON.stringify(command),
+      };
+
+      console.log('⚙️ Request options:', {
+        method: requestOptions.method,
+        bodySize: typeof requestOptions.body === 'string' ? requestOptions.body.length : 'unknown',
+      });
+
+      console.log('📤 Making secure fetch request...');
+      const response = await apiSecureFetch(url, requestOptions);
+      
+      console.log('📥 Response received:');
+      console.log('  - Status:', response.status);
+      console.log('  - Status Text:', response.statusText);
+      console.log('  - OK:', response.ok);
+      
+      if (!response.ok) {
+        console.error('❌ HTTP Error Response');
+        
+        let errorData = '';
+        let errorDetails = null;
+        
+        try {
+          const responseText = await response.text();
+          errorData = responseText;
+          
+          if (responseText.trim()) {
+            errorDetails = JSON.parse(responseText);
+            console.error('📄 Error response body:', errorDetails);
+          }
+        } catch (parseError) {
+          console.error('⚠️ Failed to parse error response body:', parseError);
+          console.error('📄 Raw error response:', errorData);
+        }
+        
+        // For authentication, we want to return the error message from the server
+        if (response.status === 401 && errorDetails && errorDetails.data) {
+          throw new ApiError(
+            errorDetails.data,
+            response.status,
+            errorDetails
+          );
+        }
+        
+        throw new ApiError(
+          `Authentication failed: ${response.status} ${response.statusText}`,
+          response.status,
+          errorDetails
+        );
+      }
+      
+      const responseData = await response.text();
+      console.log('📄 Raw response body length:', responseData.length);
+      
+      let result: AuthResponse;
+      try {
+        result = JSON.parse(responseData);
+        console.log('✅ Authentication successful:', {
+          success: result.success,
+          userKey: result.data?.userKey,
+          username: result.data?.username,
+          tokenType: result.data?.tokenType,
+          hasToken: !!result.data?.token
+        });
+      } catch (parseError) {
+        console.error('❌ Failed to parse authentication response JSON:', parseError);
+        console.error('📄 Response body that failed to parse:', responseData);
+        throw new ApiError('Invalid JSON response from server', response.status);
+      }
+      
+      console.log('✅ UserService.authenticate() completed successfully');
+      return result as AuthResponse;
+    } catch (error) {
+      console.error('💀 Exception in UserService.authenticate():');
+      
+      if (error instanceof ApiError) {
+        console.error('  - Type: ApiError (rethrowing)');
+        throw error;
+      }
+      
+      if (error instanceof TypeError && error.message.includes('fetch')) {
+        console.error('  - Type: Network Error');
+        console.error('  - Details:', error.message);
+        throw new ApiError(
+          `Network error: Unable to connect to server at ${buildApiUrl(API_CONFIG.ENDPOINTS.AUTH)}`,
+          undefined,
+          error
+        );
+      }
+      
+      console.error('  - Type: Unexpected Error');
+      if (error instanceof Error) {
+        console.error('  - Constructor:', error.constructor.name);
+        console.error('  - Message:', error.message);
+        console.error('  - Stack:', error.stack);
+      } else {
+        console.error('  - Value:', error);
+      }
+      
+      // Handle network errors or other unexpected errors
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      throw new ApiError(
+        `Unexpected error occurred while authenticating user: ${errorMessage}`,
+        undefined,
+        error
+      );
+    }
+  }
+
+  /**
    * Helper method to validate register user command before API call
    * 
    * @param command - Command to validate
@@ -290,6 +417,28 @@ export class UserService {
     
     if (!command.email?.trim()) {
       errors.push('Email is required');
+    }
+    
+    if (!command.password?.trim()) {
+      errors.push('Password is required');
+    }
+
+    if (errors.length > 0) {
+      throw new Error(`Validation failed: ${errors.join(', ')}`);
+    }
+  }
+
+  /**
+   * Helper method to validate authentication credentials before API call
+   * 
+   * @param command - Command to validate
+   * @throws Error if validation fails
+   */
+  static validateAuthCredentialsCommand(command: AuthCredentialsCommand): void {
+    const errors: string[] = [];
+
+    if (!command.username?.trim()) {
+      errors.push('Username is required');
     }
     
     if (!command.password?.trim()) {
