@@ -14,6 +14,7 @@ interface UseAuthenticationReturn {
   loading: boolean;
   error: any;
   authenticate: (credentials: AuthCredentialsCommand) => Promise<AuthResponse | null>;
+  logout: () => Promise<void>;
   clearError: () => void;
   reset: () => void;
 }
@@ -46,6 +47,21 @@ export const useAuthentication = (): UseAuthenticationReturn => {
       isExecutingRef.current = false;
     },
   });
+
+  const logout = useCallback(async (): Promise<void> => {
+    console.log('🎯 useAuthentication.logout() called');
+    
+    try {
+      await UserService.logout();
+      console.log('✅ Logout completed successfully');
+      
+      // Reset the hook state
+      reset();
+    } catch (error) {
+      console.error('❌ Logout failed:', error);
+      throw error;
+    }
+  }, [reset]);
 
   const authenticate = useCallback(async (credentials: AuthCredentialsCommand): Promise<AuthResponse | null> => {
     console.log('🎯 useAuthentication.authenticate() called');
@@ -80,6 +96,7 @@ export const useAuthentication = (): UseAuthenticationReturn => {
     loading,
     error,
     authenticate,
+    logout,
     clearError,
     reset,
   };

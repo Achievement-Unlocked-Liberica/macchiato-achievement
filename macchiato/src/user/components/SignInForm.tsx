@@ -10,6 +10,7 @@ import { useForm } from '../../common/hooks';
 import { SignInFormData, signInValidationRules } from '../validation';
 import { useAuthentication } from '../hooks';
 import { AuthCredentialsCommand } from '../services/commands/AuthCredentialsCommand';
+import { useAuthContext } from '../../common/context';
 
 type RootStackParamList = {
   Main: undefined;
@@ -36,6 +37,7 @@ const initialFormData: SignInFormData = {
 const SignInForm = forwardRef<SignInFormRef, SignInFormProps>(({ onSubmit }, ref) => {
   const navigation = useNavigation<NavigationProp>();
   const { authenticate, loading, error } = useAuthentication();
+  const { setAuthData } = useAuthContext();
   
   // Use the form hook for state management and validation
   const {
@@ -64,6 +66,15 @@ const SignInForm = forwardRef<SignInFormRef, SignInFormProps>(({ onSubmit }, ref
         const result = await authenticate(credentials);
         if (result && result.success) {
           console.log('✅ Authentication successful:', result);
+          
+          // Update global auth context
+          setAuthData({
+            token: result.data.token,
+            tokenType: result.data.tokenType,
+            userKey: result.data.userKey,
+            username: result.data.username,
+            email: result.data.email,
+          });
           
           // Show success popup with userKey and token
           Alert.alert(

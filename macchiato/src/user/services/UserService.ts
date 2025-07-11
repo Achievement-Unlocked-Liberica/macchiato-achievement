@@ -1,4 +1,5 @@
 import { API_CONFIG, buildApiUrl, apiSecureFetch, ApiResponse, ApiError } from '../../common/services/apiConfig';
+import { TokenStorageService } from '../../common/services/tokenStorage';
 import { AddUserCommand, AddUserResponse } from './commands/AddUserCommand';
 import { RegisterUserCommand, RegisterUserResponse } from './commands/RegisterUserCommand';
 import { AuthCredentialsCommand, AuthResponse } from './commands/AuthCredentialsCommand';
@@ -265,8 +266,8 @@ export class UserService {
         bodySize: typeof requestOptions.body === 'string' ? requestOptions.body.length : 'unknown',
       });
 
-      console.log('📤 Making secure fetch request...');
-      const response = await apiSecureFetch(url, requestOptions);
+      console.log('📤 Making secure fetch request (without auth headers)...');
+      const response = await apiSecureFetch(url, requestOptions, false);
       
       console.log('📥 Response received:');
       console.log('  - Status:', response.status);
@@ -321,6 +322,23 @@ export class UserService {
           tokenType: result.data?.tokenType,
           hasToken: !!result.data?.token
         });
+
+        // Store authentication data securely
+        if (result.success && result.data) {
+          try {
+            await TokenStorageService.storeAuthData({
+              token: result.data.token,
+              tokenType: result.data.tokenType,
+              userKey: result.data.userKey,
+              username: result.data.username,
+              email: result.data.email,
+            });
+            console.log('🔐 Authentication data stored securely');
+          } catch (storageError) {
+            console.error('❌ Failed to store authentication data:', storageError);
+            // Don't throw here, authentication was successful
+          }
+        }
       } catch (parseError) {
         console.error('❌ Failed to parse authentication response JSON:', parseError);
         console.error('📄 Response body that failed to parse:', responseData);
@@ -363,6 +381,21 @@ export class UserService {
         undefined,
         error
       );
+    }
+  }
+
+  /**
+   * Logout user and clear stored authentication data
+   */
+  static async logout(): Promise<void> {
+    console.log('🚀 UserService.logout() called');
+    
+    try {
+      await TokenStorageService.clearAuthData();
+      console.log('✅ User logged out successfully');
+    } catch (error) {
+      console.error('❌ Failed to logout user:', error);
+      throw new Error('Failed to clear authentication data');
     }
   }
 
