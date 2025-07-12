@@ -3,6 +3,7 @@ import { TokenStorageService } from '../../common/services/tokenStorage';
 import { AddUserCommand, AddUserResponse } from './commands/AddUserCommand';
 import { RegisterUserCommand, RegisterUserResponse } from './commands/RegisterUserCommand';
 import { AuthCredentialsCommand, AuthResponse } from './commands/AuthCredentialsCommand';
+import { UserDto, UserProfileResponse } from '../models/UserDto';
 
 /**
  * UserService
@@ -482,6 +483,125 @@ export class UserService {
       throw new Error(`Validation failed: ${errors.join(', ')}`);
     }
   }
+
+  /**
+   * Get current user profile
+   * 
+   * @returns Promise with the user profile data
+   * @throws ApiError if the request fails
+   */
+  static async getUserProfile(): Promise<UserDto> {
+    console.log('🚀 UserService.getUserProfile() called');
+    
+    try {
+      const url = buildApiUrl(API_CONFIG.ENDPOINTS.USER_PROFILE);
+      console.log('🌐 API URL:', url);
+      
+      const requestOptions: RequestInit = {
+        method: 'GET',
+      };
+
+      console.log('⚙️ Request options:', {
+        method: requestOptions.method,
+      });
+
+      console.log('📤 Making secure fetch request with auth headers...');
+      const response = await apiSecureFetch(url, requestOptions, true);
+      
+      console.log('📥 Response received:');
+      console.log('  - Status:', response.status);
+      console.log('  - Status Text:', response.statusText);
+      console.log('  - OK:', response.ok);
+      
+      if (!response.ok) {
+        console.error('❌ HTTP Error Response');
+        
+        let errorData = '';
+        let errorDetails = null;
+        
+        try {
+          const responseText = await response.text();
+          errorData = responseText;
+          
+          if (responseText.trim()) {
+            errorDetails = JSON.parse(responseText);
+            console.error('📄 Error response body:', errorDetails);
+          }
+        } catch (parseError) {
+          console.error('⚠️ Failed to parse error response body:', parseError);
+          console.error('📄 Raw error response:', errorData);
+        }
+        
+        throw new ApiError(
+          `Failed to get user profile: ${response.status} ${response.statusText}`,
+          response.status,
+          errorDetails
+        );
+      }
+      
+      const responseData = await response.text();
+      console.log('📄 Raw response body length:', responseData.length);
+      
+      let result: UserProfileResponse;
+      try {
+        result = JSON.parse(responseData);
+        console.log('✅ User profile retrieved successfully:', {
+          success: result.success,
+          username: result.data?.username,
+          entityKey: result.data?.entityKey,
+          firstName: result.data?.firstName,
+          lastName: result.data?.lastName,
+        });
+
+        // Convert birthDate string to Date object if needed
+        if (result.data && result.data.birthDate) {
+          result.data.birthDate = new Date(result.data.birthDate);
+        }
+      } catch (parseError) {
+        console.error('❌ Failed to parse user profile response JSON:', parseError);
+        console.error('📄 Response body that failed to parse:', responseData);
+        throw new ApiError('Invalid JSON response from server', response.status);
+      }
+      
+      console.log('✅ UserService.getUserProfile() completed successfully');
+      return result.data;
+    } catch (error) {
+      console.error('💀 Exception in UserService.getUserProfile():');
+      
+      if (error instanceof ApiError) {
+        console.error('  - Type: ApiError (rethrowing)');
+        throw error;
+      }
+      
+      if (error instanceof TypeError && error.message.includes('fetch')) {
+        console.error('  - Type: Network Error');
+        console.error('  - Details:', error.message);
+        throw new ApiError(
+          `Network error: Unable to connect to server at ${buildApiUrl(API_CONFIG.ENDPOINTS.USER_PROFILE)}`,
+          undefined,
+          error
+        );
+      }
+      
+      console.error('  - Type: Unexpected Error');
+      if (error instanceof Error) {
+        console.error('  - Constructor:', error.constructor.name);
+        console.error('  - Message:', error.message);
+        console.error('  - Stack:', error.stack);
+      } else {
+        console.error('  - Value:', error);
+      }
+      
+      // Handle network errors or other unexpected errors
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      throw new ApiError(
+        `Unexpected error occurred while getting user profile: ${errorMessage}`,
+        undefined,
+        error
+      );
+    }
+  }
+
 }
 
 export default UserService;

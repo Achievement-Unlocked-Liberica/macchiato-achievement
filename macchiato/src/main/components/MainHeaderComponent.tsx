@@ -1,25 +1,8 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import { StackNavigationProp } from '@react-navigation/stack';
-import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faRightToBracket } from '@fortawesome/free-solid-svg-icons';
-
-type RootStackParamList = {
-  Main: undefined;
-  Registration: undefined;
-  SignIn: undefined;
-};
-
-type NavigationProp = StackNavigationProp<RootStackParamList>;
+import { View, Text, Image, StyleSheet } from 'react-native';
+import { UserProfileWidget } from './UserProfileWidget';
 
 export default function MainHeaderComponent() {
-  const navigation = useNavigation<NavigationProp>();
-
-  const handleSignInPress = () => {
-    navigation.navigate('SignIn');
-  };
-
   return (
     <View style={styles.container}>
       {/* Logo */}
@@ -34,15 +17,8 @@ export default function MainHeaderComponent() {
         Achievement Unlocked
       </Text>
       
-      {/* Sign In Button */}
-      <TouchableOpacity style={styles.button} onPress={handleSignInPress}>
-        <FontAwesomeIcon 
-          icon={faRightToBracket} 
-          size={16} 
-          color="#171717" 
-        />
-        <Text style={styles.buttonText}>Sign In</Text>
-      </TouchableOpacity>
+      {/* User Profile Widget (replaces the old Sign In button) */}
+      <UserProfileWidget />
     </View>
   );
 }
@@ -54,33 +30,28 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: 16,
     paddingVertical: 12,
-    backgroundColor: '#1E252C', // background.primary
+    backgroundColor: '#FFFFFF',
+    borderBottomWidth: 1,
+    borderBottomColor: '#E5E7EB',
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 3.84,
   },
   logo: {
-    width: 40,
-    height: 40,
+    width: 32,
+    height: 32,
   },
   title: {
-    color: '#FCFCFC', // text.primary
     fontSize: 18,
-    fontWeight: '600',
+    fontWeight: 'bold',
+    color: '#171717',
     flex: 1,
-    textAlign: 'left',
-    marginLeft: 12,
-  },
-  button: {
-    backgroundColor: '#F8C825', // accent.500
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    borderRadius: 6,
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexDirection: 'row',
-    gap: 6,
-  },
-  buttonText: {
-    color: '#171717', // text.inverse
-    fontSize: 14,
-    fontWeight: '600',
+    textAlign: 'center',
+    marginHorizontal: 16,
   },
 });

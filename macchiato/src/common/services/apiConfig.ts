@@ -14,6 +14,7 @@ export const API_CONFIG = {
     USER: '/api/cmd/user',
     REGISTER: '/api/cmd/security/register',
     AUTH: '/api/cmd/security/auth',
+    USER_PROFILE: '/api/qry/user/me',
   },
 } as const;
 
