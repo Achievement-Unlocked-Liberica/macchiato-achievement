@@ -30,7 +30,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: 16,
     paddingVertical: 12,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#1E252C', // primary-950 main background color
     borderBottomWidth: 1,
     borderBottomColor: '#E5E7EB',
     elevation: 2,
@@ -49,9 +49,9 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#171717',
+    color: '#FCFCFC', // light text for dark background
     flex: 1,
-    textAlign: 'center',
+    textAlign: 'left',
     marginHorizontal: 16,
   },
 });
