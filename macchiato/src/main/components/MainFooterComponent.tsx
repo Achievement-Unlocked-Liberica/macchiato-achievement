@@ -17,9 +17,11 @@ export default function MainFooterComponent({
           {actions}
         </View>
       ) : (
-        <Text style={styles.title}>
-          Main Footer
-        </Text>
+        <View style={styles.defaultContent}>
+          <Text style={styles.authLabel}>
+            auth tokens cleared on exit
+          </Text>
+        </View>
       )}
     </View>
   );
@@ -40,9 +42,19 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 12,
   },
+  defaultContent: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   title: {
     color: '#FCFCFC', // light text for dark background
     fontSize: 16,
     fontWeight: '600',
+    marginBottom: 4,
+  },
+  authLabel: {
+    color: '#9CA3AF', // gray-400 for subtle appearance
+    fontSize: 10,
+    fontStyle: 'italic',
   },
 });

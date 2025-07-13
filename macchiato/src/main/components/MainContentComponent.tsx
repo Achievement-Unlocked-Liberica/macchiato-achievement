@@ -1,11 +1,18 @@
-import { View, Text, StyleSheet } from 'react-native';
+import { View, StyleSheet, ImageBackground } from 'react-native';
 
 export default function MainContentComponent() {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>
-        Main Content
-      </Text>
+      <ImageBackground
+        source={require('../../resources/icons/au icon sm.jpg')}
+        style={styles.backgroundImage}
+        imageStyle={styles.backgroundImageStyle}
+        resizeMode="center"
+      >
+        <View style={styles.overlay}>
+          {/* Content area - ready for any app content */}
+        </View>
+      </ImageBackground>
     </View>
   );
 }
@@ -13,13 +20,20 @@ export default function MainContentComponent() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#1E252C', // primary-950 Main background
+  },
+  backgroundImage: {
+    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#1E252C', // background.primary
   },
-  title: {
-    fontSize: 24,
-    fontWeight: '600',
-    color: '#FCFCFC', // text.primary
+  backgroundImageStyle: {
+    opacity: 0.5, // 50% translucency
+  },
+  overlay: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'transparent',
   },
 });

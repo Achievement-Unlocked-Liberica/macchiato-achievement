@@ -7,6 +7,7 @@
 
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { TokenStorageService, StoredAuthData } from '../services/tokenStorage';
+import { AppStateService } from '../services/appStateService';
 
 interface AuthContextType {
   isAuthenticated: boolean;
@@ -74,6 +75,18 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   // Check authentication status on mount
   useEffect(() => {
     checkAuthStatus();
+    
+    // Initialize app state monitoring for automatic sign out
+    AppStateService.initialize(async () => {
+      console.log('🚪 AuthProvider: App state triggered auth clear');
+      setIsAuthenticated(false);
+      setUser(null);
+    });
+    
+    // Cleanup on unmount
+    return () => {
+      AppStateService.cleanup();
+    };
   }, []);
 
   const value: AuthContextType = {
