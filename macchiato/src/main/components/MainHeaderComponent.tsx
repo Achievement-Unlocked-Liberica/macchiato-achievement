@@ -2,23 +2,35 @@ import React from 'react';
 import { View, Text, Image, StyleSheet } from 'react-native';
 import { UserProfileWidget } from './UserProfileWidget';
 
-export default function MainHeaderComponent() {
+interface MainHeaderComponentProps {
+  showProfile?: boolean;
+  showLogo?: boolean;
+  customTitle?: string;
+}
+
+export default function MainHeaderComponent({ 
+  showProfile = true, 
+  showLogo = true, 
+  customTitle 
+}: MainHeaderComponentProps) {
   return (
     <View style={styles.container}>
       {/* Logo */}
-      <Image 
-        source={require('../../resources/icons/au icon xs.jpg')}
-        style={styles.logo}
-        resizeMode="contain"
-      />
+      {showLogo && (
+        <Image 
+          source={require('../../resources/icons/au icon xs.jpg')}
+          style={styles.logo}
+          resizeMode="contain"
+        />
+      )}
       
       {/* Header Title */}
       <Text style={styles.title}>
-        Achievement Unlocked
+        {customTitle || 'Achievement Unlocked'}
       </Text>
       
-      {/* User Profile Widget (replaces the old Sign In button) */}
-      <UserProfileWidget />
+      {/* User Profile Widget */}
+      {showProfile && <UserProfileWidget />}
     </View>
   );
 }

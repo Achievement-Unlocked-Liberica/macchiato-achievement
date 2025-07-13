@@ -1,11 +1,26 @@
+import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 
-export default function MainFooterComponent() {
+interface MainFooterComponentProps {
+  showActions?: boolean;
+  actions?: React.ReactNode;
+}
+
+export default function MainFooterComponent({ 
+  showActions = false, 
+  actions 
+}: MainFooterComponentProps) {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>
-        Main Footer
-      </Text>
+      {showActions && actions ? (
+        <View style={styles.actionsContainer}>
+          {actions}
+        </View>
+      ) : (
+        <Text style={styles.title}>
+          Main Footer
+        </Text>
+      )}
     </View>
   );
 }
@@ -19,6 +34,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderTopWidth: 1,
     borderTopColor: '#E5E7EB',
+  },
+  actionsContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
   },
   title: {
     color: '#FCFCFC', // light text for dark background
