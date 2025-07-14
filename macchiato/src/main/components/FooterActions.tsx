@@ -111,6 +111,17 @@ export const CommentAction: React.FC<{ onPress: () => void }> = ({ onPress }) =>
   />
 );
 
+// Circular Add Achievement Action for main screen
+export const AddAchievementAction: React.FC<{ onPress: () => void }> = ({ onPress }) => (
+  <TouchableOpacity style={styles.circularButton} onPress={onPress}>
+    <FontAwesomeIcon 
+      icon={faPlus} 
+      size={20} 
+      color="#171717" 
+    />
+  </TouchableOpacity>
+);
+
 const styles = StyleSheet.create({
   actionButton: {
     flexDirection: 'row',
@@ -138,5 +149,18 @@ const styles = StyleSheet.create({
   },
   secondaryButtonText: {
     color: '#FCFCFC',
+  },
+  circularButton: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: '#FACC15', // accent-500 color
+    alignItems: 'center',
+    justifyContent: 'center',
+    elevation: 4, // Android shadow
+    shadowColor: '#000', // iOS shadow
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
   },
 });
