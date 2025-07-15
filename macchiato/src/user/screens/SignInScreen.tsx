@@ -1,10 +1,11 @@
-import React, { useRef } from 'react';
-import { View, Text, ScrollView, Alert } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import React, { useRef, useEffect, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
+import { Alert } from 'react-native';
+import { LayoutWrapper } from '../../common/components/LayoutWrapper';
+import { useLayout } from '../../common/context';
 import SignInForm, { SignInFormRef } from '../components/SignInForm';
-import { CancelButton } from '../../common/components';
+import { SignInFooter } from '../components/SignInFooter';
 
 type RootStackParamList = {
   Main: undefined;
@@ -21,7 +22,21 @@ interface FormData {
 
 export default function SignInScreen() {
   const navigation = useNavigation<NavigationProp>();
+  const { updateLayout } = useLayout();
   const formRef = useRef<SignInFormRef>(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    // Configure layout for sign in screen
+    updateLayout({
+      header: {
+        visible: true,
+        showLogo: true,
+        showProfile: true,
+        customTitle: 'Sign In',
+      },
+    });
+  }, [updateLayout]);
 
   const handleFormSubmit = (formData: FormData) => {
     console.log('Sign in form submitted:', formData);
@@ -44,27 +59,22 @@ export default function SignInScreen() {
     navigation.navigate('Main');
   };
 
+  const handleSubmit = () => {
+    // Trigger form validation and submission through the ref
+    formRef.current?.submitForm();
+  };
+
+  const handleLoadingChange = (loading: boolean) => {
+    setIsLoading(loading);
+  };
+
   return (
-    <SafeAreaView className="flex-1 bg-background-primary">
-      {/* Header Section */}
-      <View className="bg-background-secondary py-4 px-6 items-center">
-        <Text className="text-text-primary text-xl font-semibold">Sign In</Text>
-      </View>
-
-      {/* Content Section */}
-      <ScrollView className="flex-1 bg-background-tertiary" showsVerticalScrollIndicator={false}>
-        <SignInForm ref={formRef} onSubmit={handleFormSubmit} />
-      </ScrollView>
-
-      {/* Footer Section */}
-      <View className="bg-background-secondary py-4 px-6 border-t border-border-secondary">
-        <Text className="text-text-secondary text-center text-sm mb-4">
-          Sign in to access your account
-        </Text>
-        <View className="flex-row justify-center">
-          <CancelButton onPress={handleCancel} />
-        </View>
-      </View>
-    </SafeAreaView>
+    <LayoutWrapper footer={<SignInFooter onCancel={handleCancel} onSubmit={handleSubmit} isLoading={isLoading} />}>
+      <SignInForm 
+        ref={formRef}
+        onSubmit={handleFormSubmit}
+        onLoadingChange={handleLoadingChange}
+      />
+    </LayoutWrapper>
   );
 }

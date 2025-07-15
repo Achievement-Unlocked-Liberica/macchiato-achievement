@@ -1,11 +1,12 @@
-import React, { useRef, useState } from 'react';
-import { View, Text, ScrollView, Alert } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import React, { useRef, useState, useEffect } from 'react';
+import { Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
+import { LayoutWrapper } from '../../common/components/LayoutWrapper';
+import { useLayout } from '../../common/context';
 import RegistrationForm, { RegistrationFormRef } from '../components/RegistrationForm';
-import { CancelButton, SubmitButton } from '../../common/components';
-import { UserService, AddUserCommand } from '../services';
+import { RegistrationFooter } from '../components/RegistrationFooter';
+import { RegistrationFormData } from '../validation';
 
 type RootStackParamList = {
   Main: undefined;
@@ -14,76 +15,46 @@ type RootStackParamList = {
 
 type NavigationProp = StackNavigationProp<RootStackParamList>;
 
-interface FormData {
-  username: string;
-  password: string;
-  passwordConfirmation: string;
-  email: string;
-  emailConfirmation: string;
-  firstName: string;
-  lastName: string;
-  birthdate: Date | null;
-}
-
 export default function RegistrationScreen() {
   const navigation = useNavigation<NavigationProp>();
+  const { updateLayout } = useLayout();
   const formRef = useRef<RegistrationFormRef>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleFormSubmit = async (formData: FormData) => {
-    console.log('Registration form submitted:', formData);
+  useEffect(() => {
+    // Configure layout for registration screen
+    updateLayout({
+      header: {
+        visible: true,
+        showLogo: true,
+        showProfile: true,
+        customTitle: 'Sign In | Register',
+      },
+    });
+  }, [updateLayout]);
+
+  const handleFormSubmit = async (formData: RegistrationFormData) => {
+    console.log('📝 RegistrationScreen.handleFormSubmit - User registration completed successfully');
+    console.log('👤 User data:', {
+      username: formData.username,
+      email: formData.email,
+    });
     
-    try {
-      setIsSubmitting(true);
-      
-      // Validate that birthdate is not null
-      if (!formData.birthdate) {
-        Alert.alert('Error', 'Please select a valid birthdate.');
-        return;
-      }
-      
-      // Build the AddUserCommand
-      const addUserCommand: AddUserCommand = {
-        username: formData.username.trim(),
-        email: formData.email.trim(),
-        password: formData.password.trim(),
-        firstName: formData.firstName.trim(),
-        lastName: formData.lastName.trim(),
-        birthDate: UserService.formatDateForApi(formData.birthdate),
-      };
-      
-      // Validate the command
-      UserService.validateAddUserCommand(addUserCommand);
-      
-      // Call the API
-      const result = await UserService.addUser(addUserCommand);
-      
-      console.log('User created successfully:', result);
-      
-      // Show success message and navigate back
-      Alert.alert(
-        'Registration Successful',
-        `Welcome ${formData.firstName}! Your account has been created.`,
-        [
-          {
-            text: 'OK',
-            onPress: () => navigation.navigate('Main'),
-          },
-        ]
-      );
-    } catch (error: any) {
-      console.error('Registration error:', error);
-      
-      let errorMessage = 'An error occurred during registration. Please try again.';
-      
-      if (error.message) {
-        errorMessage = error.message;
-      }
-      
-      Alert.alert('Registration Failed', errorMessage);
-    } finally {
-      setIsSubmitting(false);
-    }
+    // Show success message and navigate back
+    Alert.alert(
+      'Registration Successful',
+      `Welcome ${formData.username}! Your account has been created.`,
+      [
+        {
+          text: 'OK',
+          onPress: () => navigation.navigate('Main'),
+        },
+      ]
+    );
+  };
+
+  const handleLoadingChange = (loading: boolean) => {
+    setIsLoading(loading);
   };
 
   const handleCancel = () => {
@@ -110,24 +81,12 @@ export default function RegistrationScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-background-primary">
-      {/* Header Section */}
-      <View className="bg-background-secondary py-4 px-6 items-center">
-        <Text className="text-text-primary text-xl font-semibold">Sign In | Register</Text>
-      </View>
-
-      {/* Content Section */}
-      <ScrollView className="flex-1 bg-background-tertiary" showsVerticalScrollIndicator={false}>
-        <RegistrationForm ref={formRef} onSubmit={handleFormSubmit} />
-      </ScrollView>
-
-      {/* Footer Section */}
-      <View className="bg-background-secondary py-4 px-6 border-t border-border-secondary">
-        <View className="flex-row justify-center gap-4">
-          <CancelButton onPress={handleCancel} disabled={isSubmitting} />
-          <SubmitButton onPress={handleSubmit} loading={isSubmitting} />
-        </View>
-      </View>
-    </SafeAreaView>
+    <LayoutWrapper footer={<RegistrationFooter onCancel={handleCancel} onSubmit={handleSubmit} isLoading={isLoading} />}>
+      <RegistrationForm 
+        ref={formRef} 
+        onSubmit={handleFormSubmit} 
+        onLoadingChange={handleLoadingChange}
+      />
+    </LayoutWrapper>
   );
 }

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <!-- Allow cleartext traffic for development -->
+    <domain-config cleartextTrafficPermitted="true">
+        <!-- Allow self-signed certificates for development server -->
+        <domain includeSubdomains="false">192.168.0.14</domain>
+        <domain includeSubdomains="false">localhost</domain>
+        <domain includeSubdomains="false">10.0.2.2</domain>
+        <domain includeSubdomains="false">127.0.0.1</domain>
+    </domain-config>
+    
+    <!-- For development: trust all certificates from local network -->
+    <domain-config>
+        <domain includeSubdomains="false">192.168.0.14</domain>
+        <trust-anchors>
+            <!-- Trust system certificates -->
+            <certificates src="system"/>
+            <!-- Trust user-added certificates -->
+            <certificates src="user"/>
+        </trust-anchors>
+    </domain-config>
+    
+    <!-- Base configuration for release builds -->
+    <base-config cleartextTrafficPermitted="false">
+        <trust-anchors>
+            <certificates src="system"/>
+        </trust-anchors>
+    </base-config>
+</network-security-config>
