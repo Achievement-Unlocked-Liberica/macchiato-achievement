@@ -1,4 +1,4 @@
-import React, { useState, forwardRef, useImperativeHandle } from 'react';
+import React, { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -22,6 +22,7 @@ type NavigationProp = StackNavigationProp<RootStackParamList>;
 
 interface SignInFormProps {
   onSubmit: (formData: SignInFormData) => void;
+  onLoadingChange?: (loading: boolean) => void;
 }
 
 export interface SignInFormRef {
@@ -34,7 +35,7 @@ const initialFormData: SignInFormData = {
   password: '',
 };
 
-const SignInForm = forwardRef<SignInFormRef, SignInFormProps>(({ onSubmit }, ref) => {
+const SignInForm = forwardRef<SignInFormRef, SignInFormProps>(({ onSubmit, onLoadingChange }, ref) => {
   const navigation = useNavigation<NavigationProp>();
   const { authenticate, loading, error } = useAuthentication();
   const { setAuthData } = useAuthContext();
@@ -98,6 +99,13 @@ const SignInForm = forwardRef<SignInFormRef, SignInFormProps>(({ onSubmit }, ref
       }
     },
   });
+
+  // Notify parent component about loading state changes
+  useEffect(() => {
+    if (onLoadingChange) {
+      onLoadingChange(loading);
+    }
+  }, [loading, onLoadingChange]);
 
   const handleSubmit = async () => {
     try {

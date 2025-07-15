@@ -17,5 +17,5 @@ export const AVAILABLE_SKILLS: Skill[] = [
   { id: 'int', name: 'Intelligence', description: 'Learning and reasoning' },
   { id: 'wis', name: 'Wisdom', description: 'Awareness and insight' },
   { id: 'cha', name: 'Charisma', description: 'Force of personality and leadership' },
-  { id: 'luc', name: 'Luck', description: 'Success  brought by chance rather than through one\'s own actions.' }
+  { id: 'luc', name: 'Luck', description: 'Success brought by chance rather than one\'s own actions.' }
 ];

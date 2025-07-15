@@ -4,13 +4,14 @@
  * Screen for managing achievements, starting with creation
  */
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { LayoutWrapper } from '../../common/components/LayoutWrapper';
 import { useLayout } from '../../common/context';
-import AchievementForm from '../components/AchievementForm';
+import AchievementForm, { AchievementFormRef } from '../components/AchievementForm';
 import { AchievementFormData } from '../validation/achievementValidation';
+import { AchievementFooter } from '../components/AchievementFooter';
 
 type RootStackParamList = {
   Main: undefined;
@@ -24,6 +25,8 @@ type NavigationProp = StackNavigationProp<RootStackParamList>;
 export default function AchievementScreen() {
   const navigation = useNavigation<NavigationProp>();
   const { updateLayout } = useLayout();
+  const formRef = useRef<AchievementFormRef>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     // Configure layout for achievement screen
@@ -33,10 +36,6 @@ export default function AchievementScreen() {
         showLogo: true,
         showProfile: true,
         customTitle: 'Create Achievement',
-      },
-      footer: {
-        visible: true,
-        showActions: false,
       },
     });
   }, [updateLayout]);
@@ -51,11 +50,21 @@ export default function AchievementScreen() {
     navigation.navigate('Main');
   };
 
+  const handleSubmit = () => {
+    // Trigger form validation and submission through the ref
+    formRef.current?.submitForm();
+  };
+
+  const handleLoadingChange = (loading: boolean) => {
+    setIsLoading(loading);
+  };
+
   return (
-    <LayoutWrapper>
+    <LayoutWrapper footer={<AchievementFooter onCancel={handleCancel} onSubmit={handleSubmit} isLoading={isLoading} />}>
       <AchievementForm 
+        ref={formRef}
         onSubmit={handleFormSubmit}
-        onCancel={handleCancel}
+        onLoadingChange={handleLoadingChange}
       />
     </LayoutWrapper>
   );

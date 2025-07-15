@@ -81,13 +81,12 @@ export const UserProfileWidget: React.FC = () => {
   if (!isAuthenticated) {
     return (
       <View style={styles.container}>
-        <TouchableOpacity style={styles.signInButton} onPress={handleSignInPress}>
+        <TouchableOpacity style={styles.circularSignInButton} onPress={handleSignInPress}>
           <FontAwesomeIcon 
             icon={faRightToBracket} 
-            size={16} 
+            size={20} 
             color="#171717" 
           />
-          <Text style={styles.signInButtonText}>Sign In</Text>
         </TouchableOpacity>
       </View>
     );
@@ -97,13 +96,12 @@ export const UserProfileWidget: React.FC = () => {
   return (
     <View style={styles.authenticatedContainer}>
       {/* Sign Out Button */}
-      <TouchableOpacity style={styles.signOutButton} onPress={handleSignOutPress}>
+      <TouchableOpacity style={styles.circularSignOutButton} onPress={handleSignOutPress}>
         <FontAwesomeIcon 
           icon={faRightFromBracket} 
-          size={16} 
+          size={20} 
           color="#171717" 
         />
-        <Text style={styles.signOutButtonText}>Sign Out</Text>
       </TouchableOpacity>
 
       {/* Profile Circle */}
@@ -131,43 +129,39 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 12,
   },
-  signInButton: {
-    flexDirection: 'row',
+  circularSignInButton: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: '#FACC15', // accent-500 color (same as before)
+    justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#FACC15', // accent-500 color
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderRadius: 8,
-    gap: 6,
+    elevation: 4, // Android shadow
+    shadowColor: '#000', // iOS shadow
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
   },
-  signInButtonText: {
-    color: '#171717',
-    fontSize: 14,
-    fontWeight: '600',
-  },
-  signOutButton: {
-    flexDirection: 'row',
+  circularSignOutButton: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: '#FACC15', // accent-500 color (same as before)
+    justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#FACC15', // accent-500 color
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderRadius: 8,
-    gap: 6,
-  },
-  signOutButtonText: {
-    color: '#171717',
-    fontSize: 14,
-    fontWeight: '600',
+    elevation: 4, // Android shadow
+    shadowColor: '#000', // iOS shadow
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
   },
   profileCircle: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+    width: 48,
+    height: 48,
+    borderRadius: 24,
     backgroundColor: '#FACC15', // accent-500 color
     justifyContent: 'center',
     alignItems: 'center',
-    borderWidth: 2,
-    borderColor: '#171717',
   },
   initialsText: {
     color: '#171717',
@@ -175,9 +169,9 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   profileLoadingContainer: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+    width: 48,
+    height: 48,
+    borderRadius: 24,
     backgroundColor: '#E5E7EB', // gray-200
     justifyContent: 'center',
     alignItems: 'center',

@@ -1,20 +1,39 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { AddAchievementAction } from './FooterActions';
+import { LAYOUT_CONSTANTS } from '../../common/constants/layoutConstants';
 
 interface MainFooterComponentProps {
-  showActions?: boolean;
-  actions?: React.ReactNode;
+  showMainActions?: boolean;
+  customActions?: React.ReactNode;
 }
 
+type RootStackParamList = {
+  Main: undefined;
+  Registration: undefined;
+  SignIn: undefined;
+  Achievement: undefined;
+};
+
+type NavigationProp = StackNavigationProp<RootStackParamList>;
+
 export default function MainFooterComponent({ 
-  showActions = false, 
-  actions 
+  showMainActions = true, 
+  customActions 
 }: MainFooterComponentProps) {
+  const navigation = useNavigation<NavigationProp>();
+
+  const handleAddAchievement = () => {
+    navigation.navigate('Achievement');
+  };
+
   return (
     <View style={styles.container}>
-      {showActions && actions ? (
+      {showMainActions ? (
         <View style={styles.actionsContainer}>
-          {actions}
+          {customActions || <AddAchievementAction onPress={handleAddAchievement} />}
         </View>
       ) : (
         <View style={styles.defaultContent}>
@@ -29,7 +48,7 @@ export default function MainFooterComponent({
 
 const styles = StyleSheet.create({
   container: {
-    paddingHorizontal: 16,
+    paddingHorizontal: LAYOUT_CONSTANTS.CONTAINER_PADDING,
     paddingVertical: 12,
     backgroundColor: '#1E252C', // primary-950 main background color
     alignItems: 'center',
@@ -40,7 +59,7 @@ const styles = StyleSheet.create({
   actionsContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
+    gap: LAYOUT_CONSTANTS.BUTTON_SPACING,
   },
   defaultContent: {
     alignItems: 'center',

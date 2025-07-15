@@ -14,44 +14,64 @@ import {
   faShare, 
   faBookmark,
   faHeart,
-  faComment
+  faComment,
+  faXmark,
+  faRightToBracket,
+  faUserPlus
 } from '@fortawesome/free-solid-svg-icons';
+import { LAYOUT_CONSTANTS } from '../../common/constants/layoutConstants';
 
 interface ActionButtonProps {
   onPress: () => void;
   label: string;
   icon?: any;
-  variant?: 'primary' | 'secondary' | 'success';
+  variant?: 'primary' | 'secondary' | 'success' | 'circular-cancel' | 'circular-submit' | 'circular-signin' | 'circular-register';
+  disabled?: boolean;
 }
 
-const ActionButton: React.FC<ActionButtonProps> = ({ 
+export const ActionButton: React.FC<ActionButtonProps> = ({ 
   onPress, 
   label, 
   icon, 
-  variant = 'primary' 
+  variant = 'primary',
+  disabled = false
 }) => {
   const buttonStyle = [
     styles.actionButton,
     variant === 'primary' && styles.primaryButton,
     variant === 'secondary' && styles.secondaryButton,
     variant === 'success' && styles.successButton,
+    variant === 'circular-cancel' && styles.circularCancelButton,
+    variant === 'circular-submit' && styles.circularSubmitButton,
+    variant === 'circular-signin' && styles.circularSigninButton,
+    variant === 'circular-register' && styles.circularRegisterButton,
+    disabled && styles.disabledButton,
   ];
 
   const textStyle = [
     styles.actionButtonText,
     variant === 'secondary' && styles.secondaryButtonText,
+    disabled && styles.disabledButtonText,
   ];
 
+  const isCircular = variant?.includes('circular');
+
   return (
-    <TouchableOpacity style={buttonStyle} onPress={onPress}>
+    <TouchableOpacity style={buttonStyle} onPress={onPress} disabled={disabled}>
       {icon && (
         <FontAwesomeIcon 
           icon={icon} 
-          size={16} 
-          color={variant === 'secondary' ? '#FCFCFC' : '#171717'} 
+          size={isCircular ? 20 : 16}
+          color={disabled ? '#9CA3AF' : (
+            variant === 'circular-cancel' ? '#FCFCFC' :
+            variant === 'circular-submit' ? '#FCFCFC' :
+            variant === 'circular-signin' ? '#171717' :
+            variant === 'circular-register' ? '#171717' :
+            variant === 'secondary' ? '#FCFCFC' : '#171717'
+          )} 
         />
       )}
-      <Text style={textStyle}>{label}</Text>
+      {!isCircular && <Text style={textStyle}>{label}</Text>}
     </TouchableOpacity>
   );
 };
@@ -111,6 +131,28 @@ export const CommentAction: React.FC<{ onPress: () => void }> = ({ onPress }) =>
   />
 );
 
+// Circular Cancel Action (Red button with X icon, no text)
+export const CancelAction: React.FC<{ onPress: () => void; disabled?: boolean }> = ({ onPress, disabled = false }) => (
+  <ActionButton 
+    onPress={onPress} 
+    label="Cancel" 
+    icon={faXmark} 
+    variant="circular-cancel"
+    disabled={disabled}
+  />
+);
+
+// Circular Submit Action (Green button with check icon, no text)
+export const SubmitAction: React.FC<{ onPress: () => void; disabled?: boolean }> = ({ onPress, disabled = false }) => (
+  <ActionButton 
+    onPress={onPress} 
+    label="Submit" 
+    icon={faCheck} 
+    variant="circular-submit"
+    disabled={disabled}
+  />
+);
+
 // Circular Add Achievement Action for main screen
 export const AddAchievementAction: React.FC<{ onPress: () => void }> = ({ onPress }) => (
   <TouchableOpacity style={styles.circularButton} onPress={onPress}>
@@ -150,6 +192,12 @@ const styles = StyleSheet.create({
   secondaryButtonText: {
     color: '#FCFCFC',
   },
+  disabledButton: {
+    opacity: 0.5,
+  },
+  disabledButtonText: {
+    color: '#9CA3AF',
+  },
   circularButton: {
     width: 56,
     height: 56,
@@ -157,10 +205,42 @@ const styles = StyleSheet.create({
     backgroundColor: '#FACC15', // accent-500 color
     alignItems: 'center',
     justifyContent: 'center',
-    elevation: 4, // Android shadow
-    shadowColor: '#000', // iOS shadow
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
+    ...LAYOUT_CONSTANTS.SHADOW,
+  },
+  circularCancelButton: {
+    width: 60,
+    height: 60,
+    borderRadius: LAYOUT_CONSTANTS.CIRCULAR_BORDER_RADIUS,
+    backgroundColor: '#B91C1C', // error.700 color
+    alignItems: 'center',
+    justifyContent: 'center',
+    ...LAYOUT_CONSTANTS.SHADOW,
+  },
+  circularSubmitButton: {
+    width: 60,
+    height: 60,
+    borderRadius: LAYOUT_CONSTANTS.CIRCULAR_BORDER_RADIUS,
+    backgroundColor: '#15803D', // success.700 color
+    alignItems: 'center',
+    justifyContent: 'center',
+    ...LAYOUT_CONSTANTS.SHADOW,
+  },
+  circularSigninButton: {
+    width: 60,
+    height: 60,
+    borderRadius: LAYOUT_CONSTANTS.CIRCULAR_BORDER_RADIUS,
+    backgroundColor: '#FACC15', // accent-500 color (keeping same as original)
+    alignItems: 'center',
+    justifyContent: 'center',
+    ...LAYOUT_CONSTANTS.SHADOW,
+  },
+  circularRegisterButton: {
+    width: 60,
+    height: 60,
+    borderRadius: LAYOUT_CONSTANTS.CIRCULAR_BORDER_RADIUS,
+    backgroundColor: '#FACC15', // accent-500 color (keeping same as original)
+    alignItems: 'center',
+    justifyContent: 'center',
+    ...LAYOUT_CONSTANTS.SHADOW,
   },
 });

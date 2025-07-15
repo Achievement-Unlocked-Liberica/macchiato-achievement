@@ -9,14 +9,14 @@ import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import MainHeaderComponent from '../../main/components/MainHeaderComponent';
-import MainFooterComponent from '../../main/components/MainFooterComponent';
 import { useLayout } from '../context/LayoutContext';
 
 interface LayoutWrapperProps {
   children: React.ReactNode;
+  footer?: React.ReactNode;
 }
 
-export const LayoutWrapper: React.FC<LayoutWrapperProps> = ({ children }) => {
+export const LayoutWrapper: React.FC<LayoutWrapperProps> = ({ children, footer }) => {
   const { layoutState } = useLayout();
 
   return (
@@ -33,11 +33,10 @@ export const LayoutWrapper: React.FC<LayoutWrapperProps> = ({ children }) => {
         {children}
       </View>
       
-      {layoutState.footer.visible && (
-        <MainFooterComponent 
-          showActions={layoutState.footer.showActions}
-          actions={layoutState.footer.actions}
-        />
+      {footer && (
+        <View style={styles.footer}>
+          {footer}
+        </View>
       )}
     </SafeAreaView>
   );
@@ -46,9 +45,13 @@ export const LayoutWrapper: React.FC<LayoutWrapperProps> = ({ children }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#1E252C', // primary main background color
   },
   content: {
     flex: 1,
+    backgroundColor: '#1E252C', // primary main background color
+  },
+  footer: {
+    // Footer styles will be handled by individual footer components
   },
 });

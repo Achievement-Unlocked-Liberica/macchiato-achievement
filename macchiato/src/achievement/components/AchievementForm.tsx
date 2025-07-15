@@ -4,7 +4,7 @@
  * Form for creating a new achievement
  */
 
-import React, { useState, forwardRef, useImperativeHandle } from 'react';
+import React, { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Alert, ScrollView, StyleSheet } from 'react-native';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faCheck, faXmark, faCalendar } from '@fortawesome/free-solid-svg-icons';
@@ -18,7 +18,7 @@ import { CreateAchievementCommand } from '../services/commands/CreateAchievement
 
 interface AchievementFormProps {
   onSubmit: (formData: AchievementFormData) => void;
-  onCancel: () => void;
+  onLoadingChange?: (loading: boolean) => void;
 }
 
 export interface AchievementFormRef {
@@ -34,7 +34,7 @@ const initialFormData: AchievementFormData = {
   isPublic: true, // Default to checked
 };
 
-const AchievementForm = forwardRef<AchievementFormRef, AchievementFormProps>(({ onSubmit, onCancel }, ref) => {
+const AchievementForm = forwardRef<AchievementFormRef, AchievementFormProps>(({ onSubmit, onLoadingChange }, ref) => {
   const { user } = useAuthContext();
   const { createAchievement, loading, error } = useAchievement();
   const [showDatePicker, setShowDatePicker] = useState(false);
@@ -95,6 +95,13 @@ const AchievementForm = forwardRef<AchievementFormRef, AchievementFormProps>(({ 
       }
     },
   });
+
+  // Notify parent component about loading state changes
+  useEffect(() => {
+    if (onLoadingChange) {
+      onLoadingChange(loading);
+    }
+  }, [loading, onLoadingChange]);
 
   // Expose form methods via ref
   useImperativeHandle(ref, () => ({
@@ -201,33 +208,6 @@ const AchievementForm = forwardRef<AchievementFormRef, AchievementFormProps>(({ 
           <Text style={styles.helperText}>
             Public achievements can be viewed by other users
           </Text>
-        </View>
-
-        {/* Action Buttons */}
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity
-            style={styles.cancelButton}
-            onPress={onCancel}
-            disabled={loading}
-          >
-            <FontAwesomeIcon icon={faXmark} size={16} color="#EF4444" />
-            <Text style={styles.cancelButtonText}>Cancel</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={[styles.submitButton, loading && styles.submitButtonDisabled]}
-            onPress={formHandleSubmit}
-            disabled={loading}
-          >
-            <FontAwesomeIcon 
-              icon={faCheck} 
-              size={16} 
-              color={loading ? "#9FB3C8" : "#171717"} 
-            />
-            <Text style={[styles.submitButtonText, loading && styles.submitButtonTextDisabled]}>
-              {loading ? 'Creating...' : 'Submit'}
-            </Text>
-          </TouchableOpacity>
         </View>
       </View>
 

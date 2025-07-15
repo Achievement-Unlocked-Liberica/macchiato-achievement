@@ -1,10 +1,11 @@
-import React, { useRef, useState } from 'react';
-import { View, Text, ScrollView, Alert } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import React, { useRef, useState, useEffect } from 'react';
+import { Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
+import { LayoutWrapper } from '../../common/components/LayoutWrapper';
+import { useLayout } from '../../common/context';
 import RegistrationForm, { RegistrationFormRef } from '../components/RegistrationForm';
-import { CancelButton, SubmitButton } from '../../common/components';
+import { RegistrationFooter } from '../components/RegistrationFooter';
 import { RegistrationFormData } from '../validation';
 
 type RootStackParamList = {
@@ -16,8 +17,21 @@ type NavigationProp = StackNavigationProp<RootStackParamList>;
 
 export default function RegistrationScreen() {
   const navigation = useNavigation<NavigationProp>();
+  const { updateLayout } = useLayout();
   const formRef = useRef<RegistrationFormRef>(null);
   const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    // Configure layout for registration screen
+    updateLayout({
+      header: {
+        visible: true,
+        showLogo: true,
+        showProfile: true,
+        customTitle: 'Sign In | Register',
+      },
+    });
+  }, [updateLayout]);
 
   const handleFormSubmit = async (formData: RegistrationFormData) => {
     console.log('📝 RegistrationScreen.handleFormSubmit - User registration completed successfully');
@@ -67,28 +81,12 @@ export default function RegistrationScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-background-primary">
-      {/* Header Section */}
-      <View className="bg-background-secondary py-4 px-6 items-center">
-        <Text className="text-text-primary text-xl font-semibold">Sign In | Register</Text>
-      </View>
-
-      {/* Content Section */}
-      <ScrollView className="flex-1 bg-background-tertiary" showsVerticalScrollIndicator={false}>
-        <RegistrationForm 
-          ref={formRef} 
-          onSubmit={handleFormSubmit} 
-          onLoadingChange={handleLoadingChange}
-        />
-      </ScrollView>
-
-      {/* Footer Section */}
-      <View className="bg-background-secondary py-4 px-6 border-t border-border-secondary">
-        <View className="flex-row justify-center gap-4">
-          <CancelButton onPress={handleCancel} disabled={isLoading} />
-          <SubmitButton onPress={handleSubmit} loading={isLoading} />
-        </View>
-      </View>
-    </SafeAreaView>
+    <LayoutWrapper footer={<RegistrationFooter onCancel={handleCancel} onSubmit={handleSubmit} isLoading={isLoading} />}>
+      <RegistrationForm 
+        ref={formRef} 
+        onSubmit={handleFormSubmit} 
+        onLoadingChange={handleLoadingChange}
+      />
+    </LayoutWrapper>
   );
 }

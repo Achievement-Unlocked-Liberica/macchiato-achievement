@@ -14,11 +14,6 @@ export interface LayoutState {
     showProfile: boolean;
     customTitle?: string;
   };
-  footer: {
-    visible: boolean;
-    showActions: boolean;
-    actions?: ReactNode;
-  };
 }
 
 interface LayoutContextType {
@@ -33,10 +28,6 @@ const defaultLayoutState: LayoutState = {
     showLogo: true,
     showProfile: true,
   },
-  footer: {
-    visible: true,
-    showActions: false,
-  },
 };
 
 const LayoutContext = createContext<LayoutContextType | undefined>(undefined);
@@ -47,7 +38,6 @@ export const LayoutProvider: React.FC<{ children: ReactNode }> = ({ children }) 
   const updateLayout = useCallback((updates: Partial<LayoutState>) => {
     setLayoutState(prev => ({
       header: { ...prev.header, ...updates.header },
-      footer: { ...prev.footer, ...updates.footer },
     }));
   }, []);
 
