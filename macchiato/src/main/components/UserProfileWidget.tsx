@@ -6,14 +6,14 @@
  * - Sign Out button + Profile Circle when user is authenticated
  */
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faRightToBracket, faRightFromBracket } from '@fortawesome/free-solid-svg-icons';
 import { useAuthContext } from '../../common/context';
-import { useAuthentication, useUserProfile } from '../../user/hooks';
+import { useAuthentication } from '../../user/hooks';
 
 type RootStackParamList = {
   Main: undefined;
@@ -40,14 +40,32 @@ const ProfileCircle: React.FC<ProfileCircleProps> = ({ firstName, lastName }) =>
 
 export const UserProfileWidget: React.FC = () => {
   const navigation = useNavigation<NavigationProp>();
-  const { isAuthenticated, loading: authLoading, clearAuth } = useAuthContext();
+  const { 
+    isAuthenticated, 
+    loading: authLoading, 
+    userProfile, 
+    profileLoading, 
+    getUserProfile, 
+    clearAuth 
+  } = useAuthContext();
   const { logout } = useAuthentication();
-  const { userProfile, loading: profileLoading, getUserProfile } = useUserProfile();
+  
+  // Track if we've already attempted to fetch the profile for this authentication session
+  const profileFetchAttemptedRef = useRef(false);
+  const lastAuthStateRef = useRef(isAuthenticated);
 
-  // Load user profile when authenticated
+  // Load user profile once when user becomes authenticated
   useEffect(() => {
-    if (isAuthenticated && !userProfile && !profileLoading) {
-      console.log('🔄 UserProfileWidget: User is authenticated, loading profile...');
+    // Reset profile fetch tracking when authentication state changes
+    if (lastAuthStateRef.current !== isAuthenticated) {
+      lastAuthStateRef.current = isAuthenticated;
+      profileFetchAttemptedRef.current = false;
+    }
+
+    // Fetch profile only once per authentication session
+    if (isAuthenticated && !userProfile && !profileLoading && !profileFetchAttemptedRef.current) {
+      console.log('🔄 UserProfileWidget: User is authenticated, loading profile (first time)...');
+      profileFetchAttemptedRef.current = true;
       getUserProfile();
     }
   }, [isAuthenticated, userProfile, profileLoading, getUserProfile]);
@@ -60,6 +78,9 @@ export const UserProfileWidget: React.FC = () => {
   const handleSignOutPress = async () => {
     console.log('🎯 UserProfileWidget: Sign Out button pressed');
     try {
+      // Reset profile fetch tracking
+      profileFetchAttemptedRef.current = false;
+      
       await logout();
       await clearAuth();
       console.log('✅ UserProfileWidget: User signed out successfully');

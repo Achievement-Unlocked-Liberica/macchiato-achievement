@@ -21,6 +21,7 @@ interface UseUserProfileReturn {
 
 export const useUserProfile = (): UseUserProfileReturn => {
   const isExecutingRef = useRef(false);
+  const profileFetchedRef = useRef(false);
   
   const {
     loading,
@@ -38,6 +39,7 @@ export const useUserProfile = (): UseUserProfileReturn => {
         entityKey: data.entityKey,
       });
       isExecutingRef.current = false;
+      profileFetchedRef.current = true;
     },
     onError: (error) => {
       console.error('❌ User profile retrieval failed:');
@@ -46,12 +48,19 @@ export const useUserProfile = (): UseUserProfileReturn => {
       console.error('  - Status code:', error.statusCode);
       console.error('  - Response data:', error.response);
       isExecutingRef.current = false;
+      profileFetchedRef.current = false;
     },
   });
 
   const getUserProfile = useCallback(async (): Promise<UserDto | null> => {
     console.log('🎯 useUserProfile.getUserProfile() called');
-    console.log('📊 Current state - loading:', loading, 'isExecuting:', isExecutingRef.current);
+    console.log('📊 Current state - loading:', loading, 'isExecuting:', isExecutingRef.current, 'profileFetched:', profileFetchedRef.current);
+    
+    // If we already have the profile and it was successfully fetched, don't fetch again
+    if (userProfile && profileFetchedRef.current) {
+      console.log('✅ Profile already available, skipping fetch');
+      return userProfile;
+    }
     
     // Prevent duplicate calls
     if (loading || isExecutingRef.current) {
@@ -65,7 +74,14 @@ export const useUserProfile = (): UseUserProfileReturn => {
       console.log('🔄 Executing UserService.getUserProfile...');
       return UserService.getUserProfile();
     });
-  }, [execute, loading]);
+  }, [execute, loading, userProfile]);
+
+  const customReset = useCallback(() => {
+    console.log('🔄 Resetting user profile state and cache...');
+    profileFetchedRef.current = false;
+    isExecutingRef.current = false;
+    reset();
+  }, [reset]);
 
   return {
     loading,
@@ -73,6 +89,6 @@ export const useUserProfile = (): UseUserProfileReturn => {
     userProfile,
     getUserProfile,
     clearError,
-    reset,
+    reset: customReset,
   };
 };

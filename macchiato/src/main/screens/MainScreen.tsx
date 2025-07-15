@@ -13,7 +13,8 @@ export default function MainScreen() {
       header: { 
         visible: true, 
         showLogo: true, 
-        showProfile: true 
+        showProfile: true,
+        customTitle: 'Achievement Unlocked'
       },
     });
   }, [updateLayout]);
