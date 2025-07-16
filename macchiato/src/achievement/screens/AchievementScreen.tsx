@@ -8,6 +8,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { LayoutWrapper } from '../../common/components/LayoutWrapper';
+import { SkillSelectionWidget } from '../../common/components/SkillSelectionWidget';
 import { useLayout } from '../../common/context';
 import AchievementForm, { AchievementFormRef } from '../components/AchievementForm';
 import { AchievementFormData } from '../validation/achievementValidation';
@@ -65,6 +66,10 @@ export default function AchievementScreen() {
         ref={formRef}
         onSubmit={handleFormSubmit}
         onLoadingChange={handleLoadingChange}
+      />
+      
+      <SkillSelectionWidget 
+        onSkillsChange={(skills) => console.log('Skills changed:', skills)}
       />
     </LayoutWrapper>
   );
