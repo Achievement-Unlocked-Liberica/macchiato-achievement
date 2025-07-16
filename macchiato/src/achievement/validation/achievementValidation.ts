@@ -38,7 +38,7 @@ export const achievementValidationRules: ValidationRules = {
   skills: [
     (value: string[]) => {
       if (!value || value.length === 0) {
-        return 'At least one skill must be selected';
+        return 'At least one skill should be selected';
       }
       return undefined;
     },

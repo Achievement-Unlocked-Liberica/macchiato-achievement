@@ -1,7 +1,7 @@
 import React, { forwardRef, useImperativeHandle, useEffect } from 'react';
 import { View, Text, TextInput, Alert } from 'react-native';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faFaceFrown } from '@fortawesome/free-regular-svg-icons';
+import { faExclamation } from '@fortawesome/free-solid-svg-icons';
 import { useForm } from '../../common/hooks';
 import { RegistrationFormData, registrationValidationRules } from '../validation';
 import { useUserRegistration } from '../hooks';
@@ -124,15 +124,15 @@ const RegistrationForm = forwardRef<RegistrationFormRef, RegistrationFormProps>(
 
   // Error Alert Component
   const ErrorAlert = ({ message }: { message: string }) => (
-    <View className="bg-error-50 border border-error-200 rounded-lg p-3 mt-2 flex-row items-start">
+    <View className="py-1 mt-1 flex-row items-start">
       <View className="mr-2 mt-0.5">
         <FontAwesomeIcon 
-          icon={faFaceFrown} 
+          icon={faExclamation} 
           size={16} 
           color="#EF4444" 
         />
       </View>
-      <Text className="text-error-600 text-sm flex-1 leading-5">{message}</Text>
+      <Text className="text-error-500 text-sm flex-1 leading-5">{message}</Text>
     </View>
   );
 

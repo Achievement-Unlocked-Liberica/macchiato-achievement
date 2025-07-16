@@ -3,8 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faRightToBracket, faUserPlus } from '@fortawesome/free-solid-svg-icons';
-import { faFaceFrown } from '@fortawesome/free-regular-svg-icons';
+import { faRightToBracket, faUserPlus, faExclamation } from '@fortawesome/free-solid-svg-icons';
 import { faGoogle, faFacebookF, faGithub, faLinkedinIn } from '@fortawesome/free-brands-svg-icons';
 import { useForm } from '../../common/hooks';
 import { SignInFormData, signInValidationRules } from '../validation';
@@ -139,15 +138,15 @@ const SignInForm = forwardRef<SignInFormRef, SignInFormProps>(({ onSubmit, onLoa
 
   // Error Alert Component
   const ErrorAlert = ({ message }: { message: string }) => (
-    <View className="bg-error-50 border border-error-200 rounded-lg p-3 mt-2 flex-row items-start">
+    <View className="py-1 mt-1 flex-row items-start">
       <View className="mr-2 mt-0.5">
         <FontAwesomeIcon 
-          icon={faFaceFrown} 
+          icon={faExclamation} 
           size={16} 
           color="#EF4444" 
         />
       </View>
-      <Text className="text-error-600 text-sm flex-1 leading-5">{message}</Text>
+      <Text className="text-error-500 text-sm flex-1 leading-5">{message}</Text>
     </View>
   );
 

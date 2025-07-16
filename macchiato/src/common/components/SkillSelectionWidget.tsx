@@ -80,7 +80,7 @@ export const SkillSelectionWidget = forwardRef<SkillSelectionWidgetRef, SkillSel
 
     const containerWidth = Dimensions.get('window').width * 0.85; // 75% of screen width
     const hexagonSize = containerWidth * 0.9; // 90% of container width
-    const buttonSize = 60; // Standard button size (same as cancel/submit buttons)
+    const buttonSize = 64; // Standard button size (same as cancel/submit buttons)
     const radius = (hexagonSize - buttonSize) / 2;
     const centerX = radius;
     const centerY = radius;
@@ -145,8 +145,8 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   skillButton: {
-    width: 60,
-    height: 60,
+    width: 64,
+    height: 64,
     borderRadius: 30,
     borderWidth: 2,
     justifyContent: 'center',

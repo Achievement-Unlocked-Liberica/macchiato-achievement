@@ -4,15 +4,15 @@
  * Form for creating a new achievement
  */
 
-import React, { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
+import React, { useState, useEffect, forwardRef, useImperativeHandle, useRef } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Alert, ScrollView, StyleSheet } from 'react-native';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faCheck, faXmark, faCalendar } from '@fortawesome/free-solid-svg-icons';
+import { faCheck, faXmark, faCalendar, faExclamation } from '@fortawesome/free-solid-svg-icons';
 import { useForm } from '../../common/hooks';
 import { useAuthContext } from '../../common/context';
 import { useAchievement } from '../hooks/useAchievement';
 import CustomDatePicker from '../../common/components/CustomDatePicker';
-import { MultiSelectSkills } from './MultiSelectSkills';
+import { SkillSelectionWidget, SkillSelectionWidgetRef } from '../../common/components/SkillSelectionWidget';
 import { AchievementFormData, achievementValidationRules } from '../validation/achievementValidation';
 import { CreateAchievementCommand } from '../services/commands/CreateAchievementCommand';
 
@@ -30,7 +30,7 @@ const initialFormData: AchievementFormData = {
   title: '',
   description: '',
   completedDate: '',
-  skills: [],
+  skills: [], // Keep for compatibility but will be overridden by widget
   isPublic: true, // Default to checked
 };
 
@@ -38,6 +38,7 @@ const AchievementForm = forwardRef<AchievementFormRef, AchievementFormProps>(({ 
   const { user } = useAuthContext();
   const { createAchievement, loading, error } = useAchievement();
   const [showDatePicker, setShowDatePicker] = useState(false);
+  const skillWidgetRef = useRef<SkillSelectionWidgetRef>(null);
   
   // Use the form hook for state management and validation
   const {
@@ -58,13 +59,17 @@ const AchievementForm = forwardRef<AchievementFormRef, AchievementFormProps>(({ 
         return;
       }
       
+      // Get selected skills from form data (which should be synced from widget)
+      const selectedSkills = data.skills || [];
+      console.log('🎯 Selected skills from form data:', selectedSkills);
+      
       // Convert to API format
       const command: CreateAchievementCommand = {
         userKey: user.userKey,
         title: data.title.trim(),
         description: data.description.trim(),
         completedDate: data.completedDate,
-        skills: data.skills,
+        skills: selectedSkills, // Use skills from widget
         isPublic: data.isPublic,
       };
       
@@ -125,6 +130,20 @@ const AchievementForm = forwardRef<AchievementFormRef, AchievementFormProps>(({ 
     return date.toLocaleDateString();
   };
 
+  // Error Alert Component (updated styling)
+  const ErrorAlert = ({ message }: { message: string }) => (
+    <View style={styles.errorAlert}>
+      <View style={styles.errorIconContainer}>
+        <FontAwesomeIcon 
+          icon={faExclamation} 
+          size={16} 
+          color="#EF4444" 
+        />
+      </View>
+      <Text style={styles.errorAlertText}>{message}</Text>
+    </View>
+  );
+
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
       <View style={styles.formContainer}>
@@ -139,9 +158,7 @@ const AchievementForm = forwardRef<AchievementFormRef, AchievementFormProps>(({ 
             placeholderTextColor="#9FB3C8"
             maxLength={200}
           />
-          {errors.title && (
-            <Text style={styles.errorText}>{errors.title}</Text>
-          )}
+          {errors.title && <ErrorAlert message={errors.title} />}
           <Text style={styles.helperText}>{formData.title.length}/200 characters</Text>
         </View>
 
@@ -159,9 +176,7 @@ const AchievementForm = forwardRef<AchievementFormRef, AchievementFormProps>(({ 
             maxLength={1000}
             textAlignVertical="top"
           />
-          {errors.description && (
-            <Text style={styles.errorText}>{errors.description}</Text>
-          )}
+          {errors.description && <ErrorAlert message={errors.description} />}
           <Text style={styles.helperText}>{formData.description.length}/1000 characters</Text>
         </View>
 
@@ -177,19 +192,20 @@ const AchievementForm = forwardRef<AchievementFormRef, AchievementFormProps>(({ 
             </Text>
             <FontAwesomeIcon icon={faCalendar} size={16} color="#9FB3C8" />
           </TouchableOpacity>
-          {errors.completedDate && (
-            <Text style={styles.errorText}>{errors.completedDate}</Text>
-          )}
+          {errors.completedDate && <ErrorAlert message={errors.completedDate} />}
         </View>
 
         {/* Skills Field */}
         <View style={styles.fieldContainer}>
           <Text style={styles.label}>Skills *</Text>
-          <MultiSelectSkills
-            selectedSkills={formData.skills}
-            onSelectionChange={(skills) => setFieldValue('skills', skills)}
-            error={errors.skills}
+          <SkillSelectionWidget 
+            ref={skillWidgetRef}
+            onSkillsChange={(skills) => {
+              console.log('Skills selected:', skills);
+              setFieldValue('skills', skills); // Sync skills to form data
+            }}
           />
+          {errors.skills && <ErrorAlert message={errors.skills} />}
         </View>
 
         {/* Is Public Field */}
@@ -283,11 +299,6 @@ const styles = StyleSheet.create({
   inputError: {
     borderColor: '#EF4444',
   },
-  errorText: {
-    color: '#EF4444',
-    fontSize: 14,
-    marginTop: 4,
-  },
   helperText: {
     color: '#9FB3C8',
     fontSize: 12,
@@ -359,6 +370,24 @@ const styles = StyleSheet.create({
   },
   submitButtonTextDisabled: {
     color: '#9FB3C8',
+  },
+  // Error Alert styles (updated)
+  errorAlert: {
+    paddingHorizontal: 0, // Remove left/right padding to align with fields
+    paddingVertical: 4, // Reduce top/bottom padding
+    marginTop: 4, // Reduce space from field above
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+  },
+  errorIconContainer: {
+    marginRight: 8,
+    marginTop: 2,
+  },
+  errorAlertText: {
+    color: '#EF4444', // error-500 from theme
+    fontSize: 14,
+    flex: 1,
+    lineHeight: 20,
   },
 });
 
