@@ -12,6 +12,7 @@ import { useForm } from '../../common/hooks';
 import { useAuthContext } from '../../common/context';
 import { useAchievement } from '../hooks/useAchievement';
 import CustomDatePicker from '../../common/components/CustomDatePicker';
+import AchievementMediaWidget from './AchievementMediaWidget';
 import { SkillSelectionWidget, SkillSelectionWidgetRef } from '../../common/components/SkillSelectionWidget';
 import { AchievementFormData, achievementValidationRules } from '../validation/achievementValidation';
 import { CreateAchievementCommand } from '../services/commands/CreateAchievementCommand';
@@ -147,6 +148,14 @@ const AchievementForm = forwardRef<AchievementFormRef, AchievementFormProps>(({ 
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
       <View style={styles.formContainer}>
+        {/* Achievement Media Widget */}
+        <AchievementMediaWidget 
+          onImageSelected={(imageUri) => {
+            console.log('Image selected:', imageUri);
+            // Not integrated with form state as requested - isolated for testing
+          }}
+        />
+
         {/* Title Field */}
         <View style={styles.fieldContainer}>
           <Text style={styles.label}>Title *</Text>
