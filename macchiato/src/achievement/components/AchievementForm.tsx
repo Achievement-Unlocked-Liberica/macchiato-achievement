@@ -150,8 +150,8 @@ const AchievementForm = forwardRef<AchievementFormRef, AchievementFormProps>(({ 
       <View style={styles.formContainer}>
         {/* Achievement Media Widget */}
         <AchievementMediaWidget 
-          onImageSelected={(imageUri) => {
-            console.log('Image selected:', imageUri);
+          onImagesChange={(imageUris) => {
+            console.log('Images selected:', imageUris);
             // Not integrated with form state as requested - isolated for testing
           }}
         />
