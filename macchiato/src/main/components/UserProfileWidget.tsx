@@ -14,6 +14,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faRightToBracket, faRightFromBracket } from '@fortawesome/free-solid-svg-icons';
 import { useAuthContext } from '../../common/context';
 import { useAuthentication } from '../../user/hooks';
+import { buttonStyles } from '../../common/styles/buttonStyles';
 
 type RootStackParamList = {
   Main: undefined;
@@ -32,7 +33,7 @@ const ProfileCircle: React.FC<ProfileCircleProps> = ({ firstName, lastName }) =>
   const initials = `${firstName.charAt(0).toUpperCase()}${lastName.charAt(0).toUpperCase()}`;
   
   return (
-    <View style={styles.profileCircle}>
+    <View style={buttonStyles.buttonMdPrimary}>
       <Text style={styles.initialsText}>{initials}</Text>
     </View>
   );
@@ -102,7 +103,7 @@ export const UserProfileWidget: React.FC = () => {
   if (!isAuthenticated) {
     return (
       <View style={styles.container}>
-        <TouchableOpacity style={styles.circularSignInButton} onPress={handleSignInPress}>
+        <TouchableOpacity style={buttonStyles.buttonMdPrimary} onPress={handleSignInPress}>
           <FontAwesomeIcon 
             icon={faRightToBracket} 
             size={20} 
@@ -117,7 +118,7 @@ export const UserProfileWidget: React.FC = () => {
   return (
     <View style={styles.authenticatedContainer}>
       {/* Sign Out Button */}
-      <TouchableOpacity style={styles.circularSignOutButton} onPress={handleSignOutPress}>
+      <TouchableOpacity style={buttonStyles.buttonMdPrimary} onPress={handleSignOutPress}>
         <FontAwesomeIcon 
           icon={faRightFromBracket} 
           size={20} 
@@ -149,40 +150,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 12,
-  },
-  circularSignInButton: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: '#FACC15', // accent-500 color (same as before)
-    justifyContent: 'center',
-    alignItems: 'center',
-    elevation: 4, // Android shadow
-    shadowColor: '#000', // iOS shadow
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-  },
-  circularSignOutButton: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: '#FACC15', // accent-500 color (same as before)
-    justifyContent: 'center',
-    alignItems: 'center',
-    elevation: 4, // Android shadow
-    shadowColor: '#000', // iOS shadow
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-  },
-  profileCircle: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: '#FACC15', // accent-500 color
-    justifyContent: 'center',
-    alignItems: 'center',
   },
   initialsText: {
     color: '#171717',
