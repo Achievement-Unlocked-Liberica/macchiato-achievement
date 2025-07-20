@@ -12,10 +12,10 @@ import { useForm } from '../../common/hooks';
 import { useAuthContext } from '../../common/context';
 import { useAchievement } from '../hooks/useAchievement';
 import CustomDatePicker from '../../common/components/CustomDatePicker';
-import AchievementMediaWidget from './AchievementMediaWidget';
+import AchievementMediaWidget, { AchievementMediaWidgetRef } from './AchievementMediaWidget';
 import { SkillSelectionWidget, SkillSelectionWidgetRef } from '../../common/components/SkillSelectionWidget';
 import { AchievementFormData, achievementValidationRules } from '../validation/achievementValidation';
-import { CreateAchievementCommand } from '../services/commands/CreateAchievementCommand';
+import { CreateAchievementCommand } from '../services/commands';
 
 interface AchievementFormProps {
   onSubmit: (formData: AchievementFormData) => void;
@@ -37,9 +37,10 @@ const initialFormData: AchievementFormData = {
 
 const AchievementForm = forwardRef<AchievementFormRef, AchievementFormProps>(({ onSubmit, onLoadingChange }, ref) => {
   const { user } = useAuthContext();
-  const { createAchievement, loading, error } = useAchievement();
+  const { createAchievement, uploadAchievementMedia, loading, error } = useAchievement();
   const [showDatePicker, setShowDatePicker] = useState(false);
   const skillWidgetRef = useRef<SkillSelectionWidgetRef>(null);
+  const mediaWidgetRef = useRef<AchievementMediaWidgetRef>(null);
   
   // Use the form hook for state management and validation
   const {
@@ -81,11 +82,59 @@ const AchievementForm = forwardRef<AchievementFormRef, AchievementFormProps>(({ 
         if (result && result.success) {
           console.log('✅ Achievement created successfully:', result);
           
-          Alert.alert(
-            'Achievement Created!',
-            `"${result.data.title}" has been added to your achievements.`,
-            [{ text: 'OK' }]
-          );
+          // Get the achievement entity key from the response
+          const achievementKey = result.data.entityKey; // Use entityKey for the upload service
+          console.log('🔑 Achievement entity key:', achievementKey);
+          
+          // Get images from the media widget
+          const imageUris = mediaWidgetRef.current?.getImageUris() || [];
+          console.log('📸 Images to upload:', imageUris.length);
+          
+          // If there are images to upload, call the upload service
+          if (imageUris.length > 0) {
+            try {
+              console.log('📤 Starting media upload...');
+              
+              // Upload media using hook method
+              const uploadResult = await uploadAchievementMedia({
+                achievementKey,
+                images: imageUris,
+              });
+              
+              if (uploadResult && uploadResult.success) {
+                console.log('✅ Media upload successful:', uploadResult);
+                
+                Alert.alert(
+                  'Achievement Created Successfully!',
+                  `Achievement "${result.data.title}" has been created with ${imageUris.length} image(s).\n\nAchievement Key: ${uploadResult.data.entityKey}\nUser Key: ${uploadResult.data.user.entityKey}`,
+                  [{ text: 'OK' }]
+                );
+              } else {
+                console.error('❌ Media upload failed:', uploadResult?.message);
+                
+                Alert.alert(
+                  'Error',
+                  'Achievement was created but there was an error uploading the images',
+                  [{ text: 'OK' }]
+                );
+              }
+            } catch (uploadError: any) {
+              console.error('❌ Media upload exception:', uploadError);
+              
+              Alert.alert(
+                'Error',
+                'Achievement was created but there was an error uploading the images',
+                [{ text: 'OK' }]
+              );
+            }
+          } else {
+            // No images to upload, just show success message
+            Alert.alert(
+              'Achievement Created!',
+              `"${result.data.title}" has been added to your achievements.`,
+              [{ text: 'OK' }]
+            );
+          }
           
           // Call the onSubmit callback
           onSubmit(data);
@@ -150,6 +199,7 @@ const AchievementForm = forwardRef<AchievementFormRef, AchievementFormProps>(({ 
       <View style={styles.formContainer}>
         {/* Achievement Media Widget */}
         <AchievementMediaWidget 
+          ref={mediaWidgetRef}
           onImagesChange={(imageUris) => {
             console.log('Images selected:', imageUris);
             // Not integrated with form state as requested - isolated for testing

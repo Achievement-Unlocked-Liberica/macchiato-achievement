@@ -5,17 +5,8 @@
  */
 
 import { buildApiUrl, apiSecureFetch, ApiResponse, ApiError } from '../../common/services/apiConfig';
-import { CreateAchievementCommand } from './commands/CreateAchievementCommand';
-
-export interface CreateAchievementResponse {
-  success: boolean;
-  data: {
-    achievementId: string;
-    userKey: string;
-    title: string;
-    createdAt: string;
-  };
-}
+import { CreateAchievementCommand, UploadAchievementMediaCommand } from './commands';
+import { CreateAchievementResponse, UploadAchievementMediaResponse } from './responses';
 
 export class AchievementService {
   private static readonly ENDPOINT = '/api/cmd/achievement';
@@ -82,6 +73,81 @@ export class AchievementService {
     } catch (error) {
       console.error('❌ Failed to create achievement:', error);
       throw error;
+    }
+  }
+
+  /**
+   * Upload media to an existing achievement
+   */
+  static async uploadMedia(command: UploadAchievementMediaCommand): Promise<UploadAchievementMediaResponse> {
+    console.log('🔄 AchievementService.uploadMedia() called');
+    console.log('🎯 Achievement key:', command.achievementKey);
+    console.log('📊 Images to upload:', command.images.length);
+
+    try {
+      // Create FormData for multipart upload
+      const formData = new FormData();
+      
+      // Add each image to the form data
+      for (let i = 0; i < command.images.length; i++) {
+        const imageUri = command.images[i];
+        
+        // Create file object from URI
+        const filename = `achievement_image_${i + 1}.jpg`;
+        
+        // For React Native, we need to append files with proper structure
+        formData.append('images', {
+          uri: imageUri,
+          type: 'image/jpeg',
+          name: filename,
+        } as any);
+      }
+
+      const url = buildApiUrl(`${this.ENDPOINT}/${command.achievementKey}/media`);
+      console.log('🌐 Upload URL:', url);
+
+      const requestOptions: RequestInit = {
+        method: 'POST',
+        headers: {
+          'X-API-Version': '1',
+          'Content-Type': 'multipart/form-data',
+        },
+        body: formData,
+      };
+
+      console.log('📡 Making upload request...');
+      const response = await apiSecureFetch(url, requestOptions);
+
+      console.log('📡 Upload response status:', response.status);
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('❌ Upload failed with status:', response.status, errorText);
+        throw new ApiError(
+          `Upload failed: ${response.status} ${response.statusText}`,
+          response.status,
+          errorText
+        );
+      }
+
+      const result = await response.json();
+      console.log('✅ Upload successful:', result);
+
+      return {
+        success: true,
+        data: result.data,
+      };
+    } catch (error: any) {
+      console.error('❌ Media upload error:', error);
+      return {
+        success: false,
+        data: {
+          entityKey: '',
+          user: { entityKey: '' },
+          uploadedCount: 0,
+        },
+        message: error.message || 'Failed to upload media',
+      };
     }
   }
 }
