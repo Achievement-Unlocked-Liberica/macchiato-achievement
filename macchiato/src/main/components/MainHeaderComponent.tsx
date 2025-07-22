@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, Image, StyleSheet } from 'react-native';
-import { UserProfileWidget } from './UserProfileWidget';
+import { UserProfileWidget } from '../../user/components';
 
 interface MainHeaderComponentProps {
   showProfile?: boolean;
@@ -26,7 +26,7 @@ export default function MainHeaderComponent({
       
       {/* Header Title */}
       <Text style={styles.title}>
-        {customTitle || 'Achievement Unlocked'}
+        {customTitle || 'A U'}
       </Text>
       
       {/* User Profile Widget */}
@@ -55,11 +55,11 @@ const styles = StyleSheet.create({
     shadowRadius: 3.84,
   },
   logo: {
-    width: 32,
-    height: 32,
+    width: 48,
+    height: 48,
   },
   title: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: 'bold',
     color: '#FCFCFC', // light text for dark background
     flex: 1,

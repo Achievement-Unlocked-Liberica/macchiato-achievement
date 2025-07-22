@@ -20,12 +20,13 @@ import {
   faUserPlus
 } from '@fortawesome/free-solid-svg-icons';
 import { LAYOUT_CONSTANTS } from '../../common/constants/layoutConstants';
+import { buttonStyles } from '../../common/styles/buttonStyles';
 
 interface ActionButtonProps {
   onPress: () => void;
   label: string;
   icon?: any;
-  variant?: 'primary' | 'secondary' | 'success' | 'circular-cancel' | 'circular-submit' | 'circular-signin' | 'circular-register';
+  variant?: 'primary' | 'secondary' | 'success' | 'circular-signin' | 'circular-register';
   disabled?: boolean;
 }
 
@@ -41,8 +42,6 @@ export const ActionButton: React.FC<ActionButtonProps> = ({
     variant === 'primary' && styles.primaryButton,
     variant === 'secondary' && styles.secondaryButton,
     variant === 'success' && styles.successButton,
-    variant === 'circular-cancel' && styles.circularCancelButton,
-    variant === 'circular-submit' && styles.circularSubmitButton,
     variant === 'circular-signin' && styles.circularSigninButton,
     variant === 'circular-register' && styles.circularRegisterButton,
     disabled && styles.disabledButton,
@@ -63,8 +62,6 @@ export const ActionButton: React.FC<ActionButtonProps> = ({
           icon={icon} 
           size={isCircular ? 20 : 16}
           color={disabled ? '#9CA3AF' : (
-            variant === 'circular-cancel' ? '#FCFCFC' :
-            variant === 'circular-submit' ? '#FCFCFC' :
             variant === 'circular-signin' ? '#171717' :
             variant === 'circular-register' ? '#171717' :
             variant === 'secondary' ? '#FCFCFC' : '#171717'
@@ -133,29 +130,37 @@ export const CommentAction: React.FC<{ onPress: () => void }> = ({ onPress }) =>
 
 // Circular Cancel Action (Red button with X icon, no text)
 export const CancelAction: React.FC<{ onPress: () => void; disabled?: boolean }> = ({ onPress, disabled = false }) => (
-  <ActionButton 
-    onPress={onPress} 
-    label="Cancel" 
-    icon={faXmark} 
-    variant="circular-cancel"
+  <TouchableOpacity 
+    style={disabled ? buttonStyles.buttonLgDisabled : buttonStyles.buttonLgAlert} 
+    onPress={onPress}
     disabled={disabled}
-  />
+  >
+    <FontAwesomeIcon 
+      icon={faXmark} 
+      size={20} 
+      color="#FCFCFC" 
+    />
+  </TouchableOpacity>
 );
 
 // Circular Submit Action (Green button with check icon, no text)
 export const SubmitAction: React.FC<{ onPress: () => void; disabled?: boolean }> = ({ onPress, disabled = false }) => (
-  <ActionButton 
-    onPress={onPress} 
-    label="Submit" 
-    icon={faCheck} 
-    variant="circular-submit"
+  <TouchableOpacity 
+    style={disabled ? buttonStyles.buttonLgDisabled : buttonStyles.buttonLgSuccess} 
+    onPress={onPress}
     disabled={disabled}
-  />
+  >
+    <FontAwesomeIcon 
+      icon={faCheck} 
+      size={20} 
+      color="#FCFCFC" 
+    />
+  </TouchableOpacity>
 );
 
 // Circular Add Achievement Action for main screen
 export const AddAchievementAction: React.FC<{ onPress: () => void }> = ({ onPress }) => (
-  <TouchableOpacity style={styles.circularButton} onPress={onPress}>
+  <TouchableOpacity style={buttonStyles.buttonLgPrimary} onPress={onPress}>
     <FontAwesomeIcon 
       icon={faPlus} 
       size={20} 
@@ -197,33 +202,6 @@ const styles = StyleSheet.create({
   },
   disabledButtonText: {
     color: '#9CA3AF',
-  },
-  circularButton: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: '#FACC15', // accent-500 color
-    alignItems: 'center',
-    justifyContent: 'center',
-    ...LAYOUT_CONSTANTS.SHADOW,
-  },
-  circularCancelButton: {
-    width: 60,
-    height: 60,
-    borderRadius: LAYOUT_CONSTANTS.CIRCULAR_BORDER_RADIUS,
-    backgroundColor: '#B91C1C', // error.700 color
-    alignItems: 'center',
-    justifyContent: 'center',
-    ...LAYOUT_CONSTANTS.SHADOW,
-  },
-  circularSubmitButton: {
-    width: 60,
-    height: 60,
-    borderRadius: LAYOUT_CONSTANTS.CIRCULAR_BORDER_RADIUS,
-    backgroundColor: '#15803D', // success.700 color
-    alignItems: 'center',
-    justifyContent: 'center',
-    ...LAYOUT_CONSTANTS.SHADOW,
   },
   circularSigninButton: {
     width: 60,

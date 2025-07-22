@@ -212,8 +212,8 @@ const AchievementMediaWidget = forwardRef<AchievementMediaWidgetRef, Achievement
         {/* Add Media Button */}
         <TouchableOpacity
           style={[
-            buttonStyles.buttonMdPrimary,
-            imageUris.length >= MAX_ACHIEVEMENT_IMAGES && buttonStyles.buttonMdDisabled
+            buttonStyles.buttonLgPrimary,
+            imageUris.length >= MAX_ACHIEVEMENT_IMAGES && buttonStyles.buttonLgDisabled
           ]}
           onPress={handleTakePicture}
           activeOpacity={0.8}

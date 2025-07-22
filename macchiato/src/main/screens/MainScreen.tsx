@@ -14,7 +14,7 @@ export default function MainScreen() {
         visible: true, 
         showLogo: true, 
         showProfile: true,
-        customTitle: 'Achievement Unlocked'
+        customTitle: 'A. Unlocked'
       },
     });
   }, [updateLayout]);

@@ -26,9 +26,9 @@ const baseButton: ViewStyle = {
 const buttonSizes: Record<string, ViewStyle> = {
   xs: { width: 24, height: 24, borderRadius: 12 },
   sm: { width: 32, height: 32, borderRadius: 16 },
-  md: { width: 48, height: 48, borderRadius: 24 },
-  lg: { width: 64, height: 64, borderRadius: 32 },
-  xl: { width: 72, height: 72, borderRadius: 36 },
+  md: { width: 40, height: 40, borderRadius: 20 },
+  lg: { width: 52, height: 52, borderRadius: 26 },
+  xl: { width: 64, height: 64, borderRadius: 32 },
 };
 
 // Button color variants
@@ -36,6 +36,7 @@ const buttonColors: Record<string, ViewStyle> = {
   primary: { backgroundColor: '#F8C825' },
   secondary: { backgroundColor: '#5F6B78' },
   alert: { backgroundColor: '#EF4444' }, // Red hex color
+  success: { backgroundColor: '#10B981' }, // Green hex color
   disabled: { 
     backgroundColor: '#5F6B78', 
     elevation: 1, 
@@ -49,30 +50,35 @@ export const buttonStyles: Record<string, ViewStyle> = {
   buttonXsPrimary: { ...baseButton, ...buttonSizes.xs, ...buttonColors.primary },
   buttonXsSecondary: { ...baseButton, ...buttonSizes.xs, ...buttonColors.secondary },
   buttonXsAlert: { ...baseButton, ...buttonSizes.xs, ...buttonColors.alert },
+  buttonXsSuccess: { ...baseButton, ...buttonSizes.xs, ...buttonColors.success },
   buttonXsDisabled: { ...baseButton, ...buttonSizes.xs, ...buttonColors.disabled },
 
   // Small (32px) buttons
   buttonSmPrimary: { ...baseButton, ...buttonSizes.sm, ...buttonColors.primary },
   buttonSmSecondary: { ...baseButton, ...buttonSizes.sm, ...buttonColors.secondary },
   buttonSmAlert: { ...baseButton, ...buttonSizes.sm, ...buttonColors.alert },
+  buttonSmSuccess: { ...baseButton, ...buttonSizes.sm, ...buttonColors.success },
   buttonSmDisabled: { ...baseButton, ...buttonSizes.sm, ...buttonColors.disabled },
 
   // Medium (48px) buttons
   buttonMdPrimary: { ...baseButton, ...buttonSizes.md, ...buttonColors.primary },
   buttonMdSecondary: { ...baseButton, ...buttonSizes.md, ...buttonColors.secondary },
   buttonMdAlert: { ...baseButton, ...buttonSizes.md, ...buttonColors.alert },
+  buttonMdSuccess: { ...baseButton, ...buttonSizes.md, ...buttonColors.success },
   buttonMdDisabled: { ...baseButton, ...buttonSizes.md, ...buttonColors.disabled },
 
   // Large (64px) buttons
   buttonLgPrimary: { ...baseButton, ...buttonSizes.lg, ...buttonColors.primary },
   buttonLgSecondary: { ...baseButton, ...buttonSizes.lg, ...buttonColors.secondary },
   buttonLgAlert: { ...baseButton, ...buttonSizes.lg, ...buttonColors.alert },
+  buttonLgSuccess: { ...baseButton, ...buttonSizes.lg, ...buttonColors.success },
   buttonLgDisabled: { ...baseButton, ...buttonSizes.lg, ...buttonColors.disabled },
 
   // Extra Large (72px) buttons
   buttonXlPrimary: { ...baseButton, ...buttonSizes.xl, ...buttonColors.primary },
   buttonXlSecondary: { ...baseButton, ...buttonSizes.xl, ...buttonColors.secondary },
   buttonXlAlert: { ...baseButton, ...buttonSizes.xl, ...buttonColors.alert },
+  buttonXlSuccess: { ...baseButton, ...buttonSizes.xl, ...buttonColors.success },
   buttonXlDisabled: { ...baseButton, ...buttonSizes.xl, ...buttonColors.disabled },
 };
 
