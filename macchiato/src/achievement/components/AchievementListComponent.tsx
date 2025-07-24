@@ -15,7 +15,9 @@ interface AchievementListComponentProps {
   onError?: (error: string) => void;
 }
 
-const AchievementListComponent: React.FC<AchievementListComponentProps> = ({ onError }) => {
+const AchievementListComponent: React.FC<AchievementListComponentProps> = ({ 
+  onError
+}) => {
   const { getLatestAchievements } = useAchievement();
   const [achievements, setAchievements] = useState<AchievementItem[]>([]);
   const [loading, setLoading] = useState(true);

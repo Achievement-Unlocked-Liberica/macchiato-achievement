@@ -12,9 +12,13 @@ import { SKILLS, SkillConfig } from '../constants/skillsConstants';
 
 interface SkillDisplaySmWidgetProps {
   selectedSkills: string[];
+  layout?: 'hexagon' | 'flat';
 }
 
-export const SkillDisplaySmWidget: React.FC<SkillDisplaySmWidgetProps> = ({ selectedSkills }) => {
+export const SkillDisplaySmWidget: React.FC<SkillDisplaySmWidgetProps> = ({ 
+  selectedSkills, 
+  layout = 'hexagon' 
+}) => {
   const renderSkillCircle = (skill: SkillConfig, style: any) => {
     const isSelected = selectedSkills.includes(skill.id);
     
@@ -70,8 +74,20 @@ export const SkillDisplaySmWidget: React.FC<SkillDisplaySmWidgetProps> = ({ sele
     SKILLS.find(s => s.id === 'luc')!, // Center: Luck
   ];
 
-  return (
-    <View style={styles.container}>
+  // Render flat layout - single row of skills
+  const renderFlatLayout = () => {
+    return (
+      <View style={styles.flatContainer}>
+        {SKILLS.map((skill) => 
+          renderSkillCircle(skill, styles.flatSkillCircle)
+        )}
+      </View>
+    );
+  };
+
+  // Render hexagon layout
+  const renderHexagonLayout = () => {
+    return (
       <View style={[styles.hexagonContainer, { width: hexagonSize, height: hexagonSize }]}>
         {skillsInHexagonOrder.map((skill, index) => 
           renderSkillCircle(skill, {
@@ -81,6 +97,12 @@ export const SkillDisplaySmWidget: React.FC<SkillDisplaySmWidgetProps> = ({ sele
           })
         )}
       </View>
+    );
+  };
+
+  return (
+    <View style={styles.container}>
+      {layout === 'flat' ? renderFlatLayout() : renderHexagonLayout()}
     </View>
   );
 };
@@ -93,11 +115,24 @@ const styles = StyleSheet.create({
   hexagonContainer: {
     position: 'relative',
   },
+  flatContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexWrap: 'wrap',
+  },
   skillCircle: {
     width: 12,
     height: 12,
     borderRadius: 6,
     borderWidth: 1,
+  },
+  flatSkillCircle: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    borderWidth: 1,
+    marginHorizontal: 2,
   },
 });
 

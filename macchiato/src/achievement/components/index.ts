@@ -9,6 +9,9 @@ export { AchievementFooter } from './AchievementFooter';
 export { default as AchievementMediaWidget } from './AchievementMediaWidget';
 export { default as AchievementListComponent } from './AchievementListComponent';
 export { default as AchievementItemWidget } from './AchievementItemWidget';
+export { default as AchievementGridComponent } from './AchievementGridComponent';
+export { default as AchievementCardWidget } from './AchievementCardWidget';
+export { default as AchievementFilterWidget } from './AchievementFilterWidget';
 
 // Re-export types
 export type { AchievementFormRef } from './AchievementForm';

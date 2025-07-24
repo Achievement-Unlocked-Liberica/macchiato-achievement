@@ -40,7 +40,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 16,
+    paddingHorizontal: 12,
     paddingVertical: 4,
     backgroundColor: '#1E252C', // primary-950 main background color
     borderBottomWidth: 1,

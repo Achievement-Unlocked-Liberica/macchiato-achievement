@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { View, StyleSheet, ImageBackground } from 'react-native';
 import { useAuthContext, useLayout } from '../../common/context';
-import AchievementListComponent from '../../achievement/components/AchievementListComponent';
+import AchievementListScreen from '../../achievement/screens/AchievementListScreen';
 
 export default function MainContentComponent() {
   const { isAuthenticated } = useAuthContext();
@@ -9,13 +9,13 @@ export default function MainContentComponent() {
 
   useEffect(() => {
     if (isAuthenticated) {
-      // Configure header for achievement list view
+      // Configure header for achievement list view - no title, just logo
       updateLayout({
         header: {
           visible: true,
           showLogo: true,
           showProfile: true,
-          customTitle: 'Latest Achievements',
+          customTitle: undefined,
         },
       });
     } else {
@@ -31,16 +31,11 @@ export default function MainContentComponent() {
     }
   }, [isAuthenticated, updateLayout]);
 
-  const handleError = (error: string) => {
-    console.error('Achievement List Error:', error);
-    // In a real app, you might want to show a toast or alert here
-  };
-
   return (
     <View style={styles.container}>
       {isAuthenticated ? (
-        // Show Achievement List when user is authenticated
-        <AchievementListComponent onError={handleError} />
+        // Show Achievement List Screen when user is authenticated
+        <AchievementListScreen />
       ) : (
         // Show background image when user is not authenticated
         <ImageBackground

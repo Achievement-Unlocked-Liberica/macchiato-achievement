@@ -49,7 +49,7 @@ const styles = StyleSheet.create({
   socialItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginRight: 12,
+    marginRight: 4,
   },
   countText: {
     color: '#9FB3C8',
