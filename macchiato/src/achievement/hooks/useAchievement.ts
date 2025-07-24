@@ -8,7 +8,7 @@ import { useCallback } from 'react';
 import { useAPI } from '../../common/hooks';
 import { AchievementService } from '../services/achievementService';
 import { CreateAchievementCommand, UploadAchievementMediaCommand } from '../services/commands';
-import { CreateAchievementResponse, UploadAchievementMediaResponse } from '../services/responses';
+import { CreateAchievementResponse, UploadAchievementMediaResponse, GetAchievementItemsResponse } from '../services/responses';
 
 export const useAchievement = () => {
   const { loading, error, execute, clearError } = useAPI();
@@ -43,11 +43,26 @@ export const useAchievement = () => {
     });
   }, [execute, loading]);
 
+  const getLatestAchievements = useCallback(async (): Promise<GetAchievementItemsResponse | null> => {
+    console.log('🎯 useAchievement.getLatestAchievements() called');
+
+    if (loading) {
+      console.log('⏳ Another request is already in progress, skipping...');
+      return null;
+    }
+
+    return execute(() => {
+      console.log('🔄 Executing AchievementService.getLatestAchievements...');
+      return AchievementService.getLatestAchievements();
+    });
+  }, [execute, loading]);
+
   return {
     loading,
     error,
     createAchievement,
     uploadAchievementMedia,
+    getLatestAchievements,
     clearError,
   };
 };

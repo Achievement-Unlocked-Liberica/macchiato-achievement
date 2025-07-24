@@ -49,7 +49,7 @@ export default function MainFooterComponent({
 const styles = StyleSheet.create({
   container: {
     paddingHorizontal: LAYOUT_CONSTANTS.CONTAINER_PADDING,
-    paddingVertical: 12,
+    paddingVertical: 4,
     backgroundColor: '#1E252C', // primary-950 main background color
     alignItems: 'center',
     justifyContent: 'center',

@@ -6,7 +6,8 @@
 
 import { buildApiUrl, apiSecureFetch, ApiResponse, ApiError } from '../../common/services/apiConfig';
 import { CreateAchievementCommand, UploadAchievementMediaCommand } from './commands';
-import { CreateAchievementResponse, UploadAchievementMediaResponse } from './responses';
+import { CreateAchievementResponse, UploadAchievementMediaResponse, GetAchievementItemsResponse } from './responses';
+import { LATEST_ACHIEVEMENTS_LIMIT } from '../../common/constants/achievementConstants';
 
 export class AchievementService {
   private static readonly ENDPOINT = '/api/cmd/achievement';
@@ -148,6 +149,77 @@ export class AchievementService {
         },
         message: error.message || 'Failed to upload media',
       };
+    }
+  }
+
+  /**
+   * Get latest achievements
+   */
+  static async getLatestAchievements(): Promise<GetAchievementItemsResponse> {
+    console.log('🔄 AchievementService.getLatestAchievements() called');
+
+    try {
+      const url = buildApiUrl(`/api/qry/v1/achievement/latest?size=sm&limit=${LATEST_ACHIEVEMENTS_LIMIT}`);
+      console.log('🌐 API URL:', url);
+
+      const requestOptions: RequestInit = {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-API-Version': '1',
+        },
+      };
+
+      console.log('📡 Making API request...');
+      const response = await apiSecureFetch(url, requestOptions);
+
+      if (!response.ok) {
+        console.error('❌ HTTP Error Response');
+        
+        let errorData = '';
+        let errorDetails = null;
+        
+        try {
+          errorData = await response.text();
+          console.log('📄 Raw error response body:', errorData);
+          
+          try {
+            errorDetails = JSON.parse(errorData);
+            console.log('🔍 Parsed error details:', JSON.stringify(errorDetails, null, 2));
+          } catch (parseError) {
+            console.log('⚠️ Error response is not valid JSON, treating as plain text');
+          }
+        } catch (readError) {
+          console.error('❌ Failed to read error response body:', readError);
+          errorData = 'Unable to read error response';
+        }
+        
+        const apiError = new ApiError(
+          `Failed to get latest achievements: ${response.status} ${response.statusText}${errorData ? ` - ${errorData}` : ''}`,
+          response.status,
+          errorDetails || errorData
+        );
+        
+        console.error('💥 Throwing ApiError:', apiError);
+        throw apiError;
+      }
+
+      console.log('✅ Successful response, parsing JSON...');
+      const result = await response.json();
+      console.log('📊 API response data:', JSON.stringify(result, null, 2));
+      
+      // The API returns { success: true, data: [array of achievements] }
+      // We need to extract the data array and wrap it in our response structure
+      const achievements = Array.isArray(result.data) ? result.data : [];
+      console.log('🎯 Processed achievements array:', achievements.length, 'items');
+      
+      return {
+        success: true,
+        data: achievements,
+      };
+    } catch (error) {
+      console.error('❌ Failed to get latest achievements:', error);
+      throw error;
     }
   }
 }

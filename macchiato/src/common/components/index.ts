@@ -5,3 +5,5 @@ export { default as CustomDatePicker } from './CustomDatePicker';
 export { DebugApiTest } from './DebugApiTest';
 export { SkillSelectionWidget } from './SkillSelectionWidget';
 export type { SkillSelectionWidgetRef } from './SkillSelectionWidget';
+export { SkillDisplaySmWidget } from './SkillDisplaySmWidget';
+export { SocialDisplaySmWidget } from './SocialDisplaySmWidget';
