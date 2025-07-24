@@ -138,7 +138,6 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
   },
   cardContainer: {
-    flex: 1,
     marginHorizontal: 4,
     marginBottom: 8,
   },

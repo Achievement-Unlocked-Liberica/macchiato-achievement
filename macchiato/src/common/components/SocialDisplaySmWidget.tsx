@@ -44,7 +44,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'flex-start',
-    marginTop: 4,
+    //marginTop: 4,
   },
   socialItem: {
     flexDirection: 'row',

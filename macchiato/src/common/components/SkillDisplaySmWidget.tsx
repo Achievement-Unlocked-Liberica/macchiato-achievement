@@ -13,11 +13,13 @@ import { SKILLS, SkillConfig } from '../constants/skillsConstants';
 interface SkillDisplaySmWidgetProps {
   selectedSkills: string[];
   layout?: 'hexagon' | 'flat';
+  containerStyle?: any;
 }
 
 export const SkillDisplaySmWidget: React.FC<SkillDisplaySmWidgetProps> = ({ 
   selectedSkills, 
-  layout = 'hexagon' 
+  layout = 'hexagon',
+  containerStyle
 }) => {
   const renderSkillCircle = (skill: SkillConfig, style: any) => {
     const isSelected = selectedSkills.includes(skill.id);
@@ -101,7 +103,7 @@ export const SkillDisplaySmWidget: React.FC<SkillDisplaySmWidgetProps> = ({
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, containerStyle]}>
       {layout === 'flat' ? renderFlatLayout() : renderHexagonLayout()}
     </View>
   );

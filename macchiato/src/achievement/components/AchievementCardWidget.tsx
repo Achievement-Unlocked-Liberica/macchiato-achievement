@@ -33,23 +33,39 @@ const AchievementCardWidget: React.FC<AchievementCardWidgetProps> = ({ achieveme
     return require('../../resources/icons/au icon sm.jpg');
   };
 
-  // Render skills using the SkillDisplaySmWidget with flat layout
+  // Render skills using the SkillDisplaySmWidget with flat layout and transparent background
   const renderSkills = () => {
     const skills = achievement.skills || [];
-    return <SkillDisplaySmWidget selectedSkills={skills} layout="flat" />;
+    return (
+      <SkillDisplaySmWidget 
+        selectedSkills={skills} 
+        layout="flat" 
+        containerStyle={styles.skillsTransparent}
+      />
+    );
   };
 
   const imageSource = getImageSource();
 
   return (
     <View style={styles.container}>
-      {/* Achievement Image */}
+      {/* Achievement Image with bottom overlay rectangle */}
       <View style={styles.imageContainer}>
         <Image
           source={imageSource}
           style={styles.achievementImage}
           resizeMode="cover"
         />
+        {/* Dark translucent rectangle covering bottom 1/5 of image */}
+        <View style={styles.bottomOverlayRectangle}>
+          {/* Skills widget inside the rectangle */}
+          {renderSkills()}
+        </View>
+      </View>
+
+      {/* Social Counters */}
+      <View style={styles.socialContainer}>
+        <SocialDisplaySmWidget />
       </View>
 
       {/* Title */}
@@ -57,16 +73,6 @@ const AchievementCardWidget: React.FC<AchievementCardWidgetProps> = ({ achieveme
         <Text style={styles.title} numberOfLines={2} ellipsizeMode="tail">
           {achievement.title}
         </Text>
-      </View>
-
-      {/* Skills - Flat Layout */}
-      <View style={styles.skillsContainer}>
-        {renderSkills()}
-      </View>
-
-      {/* Social Counters */}
-      <View style={styles.socialContainer}>
-        <SocialDisplaySmWidget />
       </View>
     </View>
   );
@@ -88,6 +94,7 @@ const styles = StyleSheet.create({
     shadowRadius: 3.84,
   },
   imageContainer: {
+    position: 'relative',
     width: '100%',
     height: 120,
     marginBottom: 8,
@@ -97,19 +104,30 @@ const styles = StyleSheet.create({
     height: '100%',
     borderRadius: 6,
   },
+  bottomOverlayRectangle: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: '15%', // 1/5th of the image height (120px * 0.2 = 24px)
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderBottomLeftRadius: 6,
+    borderBottomRightRadius: 6,
+  },
+  skillsTransparent: {
+    backgroundColor: 'transparent',
+  },
   titleContainer: {
     marginBottom: 8,
   },
   title: {
     color: '#FCFCFC',
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: '600',
     lineHeight: 18,
     textAlign: 'center',
-  },
-  skillsContainer: {
-    marginBottom: 8,
-    alignItems: 'center',
   },
   socialContainer: {
     alignItems: 'center',
