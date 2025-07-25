@@ -7,7 +7,7 @@
 import React, { useState, forwardRef, useImperativeHandle } from 'react';
 import { View, TouchableOpacity, Image, StyleSheet, Alert, Text } from 'react-native';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faCamera, faTimes, faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons';
+import { faCamera, faTimes, faChevronLeft, faChevronRight, faImages } from '@fortawesome/free-solid-svg-icons';
 import * as ImagePicker from 'expo-image-picker';
 import * as ImageManipulator from 'expo-image-manipulator';
 import { MAX_ACHIEVEMENT_IMAGES } from '../../common/constants/achievementConstants';
@@ -43,6 +43,19 @@ const AchievementMediaWidget = forwardRef<AchievementMediaWidgetRef, Achievement
         Alert.alert(
           'Camera Permission Required',
           'Sorry, we need camera permissions to take pictures for your achievements.',
+          [{ text: 'OK' }]
+        );
+        return false;
+      }
+      return true;
+    };
+
+    const requestMediaLibraryPermissions = async () => {
+      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (status !== 'granted') {
+        Alert.alert(
+          'Media Library Permission Required',
+          'Sorry, we need access to your photo library to select pictures for your achievements.',
           [{ text: 'OK' }]
         );
         return false;
@@ -105,6 +118,58 @@ const AchievementMediaWidget = forwardRef<AchievementMediaWidgetRef, Achievement
         Alert.alert(
           'Camera Error',
           'An error occurred while trying to take a picture. Please try again.',
+          [{ text: 'OK' }]
+        );
+      }
+    };
+
+    const handleSelectPictures = async () => {
+      try {
+        // Check if we've reached the limit
+        if (imageUris.length >= MAX_ACHIEVEMENT_IMAGES) {
+          Alert.alert(
+            'Image Limit Reached',
+            `You can only add up to ${MAX_ACHIEVEMENT_IMAGES} images per achievement.`,
+            [{ text: 'OK' }]
+          );
+          return;
+        }
+
+        // Request media library permissions
+        const hasPermission = await requestMediaLibraryPermissions();
+        if (!hasPermission) return;
+
+        // Calculate how many more images can be added
+        const remainingSlots = MAX_ACHIEVEMENT_IMAGES - imageUris.length;
+
+        // Launch image picker with multiple selection
+        const result = await ImagePicker.launchImageLibraryAsync({
+          mediaTypes: ['images'],
+          allowsMultipleSelection: true,
+          selectionLimit: remainingSlots, // Limit to remaining slots
+          allowsEditing: false,
+          quality: 0.5,
+        });
+
+        if (!result.canceled && result.assets && result.assets.length > 0) {
+          // Process all selected images
+          const compressedUris: string[] = [];
+          
+          for (const asset of result.assets) {
+            const compressedUri = await compressImage(asset.uri);
+            compressedUris.push(compressedUri);
+          }
+          
+          const newImageUris = [...imageUris, ...compressedUris];
+          setImageUris(newImageUris);
+          setCurrentImageIndex(newImageUris.length - 1); // Show the newest image on top
+          onImagesChange?.(newImageUris);
+        }
+      } catch (error) {
+        console.error('Error selecting pictures:', error);
+        Alert.alert(
+          'Picture Selection Error',
+          'An error occurred while trying to select pictures. Please try again.',
           [{ text: 'OK' }]
         );
       }
@@ -209,22 +274,42 @@ const AchievementMediaWidget = forwardRef<AchievementMediaWidgetRef, Achievement
           </View>
         )}
         
-        {/* Add Media Button */}
-        <TouchableOpacity
-          style={[
-            buttonStyles.buttonLgPrimary,
-            imageUris.length >= MAX_ACHIEVEMENT_IMAGES && buttonStyles.buttonLgDisabled
-          ]}
-          onPress={handleTakePicture}
-          activeOpacity={0.8}
-          disabled={imageUris.length >= MAX_ACHIEVEMENT_IMAGES}
-        >
-          <FontAwesomeIcon 
-            icon={faCamera} 
-            size={20} 
-            color={imageUris.length >= MAX_ACHIEVEMENT_IMAGES ? "#9FB3C8" : "#171717"} 
-          />
-        </TouchableOpacity>
+        {/* Media Action Buttons */}
+        <View style={styles.mediaButtonsContainer}>
+          {/* Add Camera Button */}
+          <TouchableOpacity
+            style={[
+              buttonStyles.buttonLgPrimary,
+              imageUris.length >= MAX_ACHIEVEMENT_IMAGES && buttonStyles.buttonLgDisabled
+            ]}
+            onPress={handleTakePicture}
+            activeOpacity={0.8}
+            disabled={imageUris.length >= MAX_ACHIEVEMENT_IMAGES}
+          >
+            <FontAwesomeIcon 
+              icon={faCamera} 
+              size={20} 
+              color={imageUris.length >= MAX_ACHIEVEMENT_IMAGES ? "#9FB3C8" : "#171717"} 
+            />
+          </TouchableOpacity>
+          
+          {/* Add Pictures Button */}
+          <TouchableOpacity
+            style={[
+              buttonStyles.buttonLgPrimary,
+              imageUris.length >= MAX_ACHIEVEMENT_IMAGES && buttonStyles.buttonLgDisabled
+            ]}
+            onPress={handleSelectPictures}
+            activeOpacity={0.8}
+            disabled={imageUris.length >= MAX_ACHIEVEMENT_IMAGES}
+          >
+            <FontAwesomeIcon 
+              icon={faImages} 
+              size={20} 
+              color={imageUris.length >= MAX_ACHIEVEMENT_IMAGES ? "#9FB3C8" : "#171717"} 
+            />
+          </TouchableOpacity>
+        </View>
         
         {/* Progress indicator */}
         {imageUris.length > 0 && (
@@ -253,6 +338,11 @@ const styles = StyleSheet.create({
     marginHorizontal: 8, // Reduced since buttons now have their own margin
     width: 250,
     height: 188,
+  },
+  mediaButtonsContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 16, // Space between camera and pictures buttons
   },
   stackedImageContainer: {
     position: 'absolute',
