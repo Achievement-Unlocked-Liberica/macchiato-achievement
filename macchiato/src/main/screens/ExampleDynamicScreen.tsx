@@ -26,31 +26,8 @@ export default function ExampleDynamicScreen() {
         visible: true,
         showLogo: true,
         showProfile: true,
-        customTitle: 'My Achievements',
-      },
-      footer: {
-        visible: true,
-        showActions: true,
-        actions: (
-          <>
-            <AddAction onPress={() => console.log('Add pressed')} />
-            <ShareAction onPress={() => console.log('Share pressed')} />
-            <BookmarkAction onPress={() => console.log('Bookmark pressed')} />
-          </>
-        ),
       },
     });
-
-    // Cleanup function to reset layout when leaving screen
-    return () => {
-      updateLayout({
-        footer: {
-          visible: true,
-          showActions: false,
-          actions: undefined,
-        },
-      });
-    };
   }, [updateLayout]);
 
   return (

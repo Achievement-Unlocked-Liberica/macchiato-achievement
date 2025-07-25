@@ -33,7 +33,6 @@ export default function SignInScreen() {
         visible: true,
         showLogo: true,
         showProfile: true,
-        customTitle: 'Sign In',
       },
     });
   }, [updateLayout]);

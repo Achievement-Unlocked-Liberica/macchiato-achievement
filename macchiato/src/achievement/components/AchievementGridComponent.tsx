@@ -5,79 +5,31 @@
  * with loading states, error handling, and refresh functionality
  */
 
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { View, FlatList, Text, StyleSheet, RefreshControl, Dimensions } from 'react-native';
-import { useAchievement } from '../hooks/useAchievement';
 import { AchievementItem } from '../services/responses';
 import AchievementCardWidget from './AchievementCardWidget';
 
 interface AchievementGridComponentProps {
+  achievements: AchievementItem[];
+  loading: boolean;
+  refreshing: boolean;
+  error: string | null;
+  onRefresh: () => void;
   onError?: (error: string) => void;
 }
 
-const AchievementGridComponent: React.FC<AchievementGridComponentProps> = ({ onError }) => {
-  const { getLatestAchievements } = useAchievement();
-  const [achievements, setAchievements] = useState<AchievementItem[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
+const AchievementGridComponent: React.FC<AchievementGridComponentProps> = ({ 
+  achievements,
+  loading,
+  refreshing,
+  error,
+  onRefresh,
+  onError 
+}) => {
   // Get screen width for responsive grid
   const screenWidth = Dimensions.get('window').width;
   const itemWidth = (screenWidth - 36) / 3; // 3 columns with margins
-
-  // Load achievements on component mount
-  useEffect(() => {
-    loadAchievements();
-  }, []);
-
-  const loadAchievements = async (isRefresh = false) => {
-    try {
-      if (isRefresh) {
-        setRefreshing(true);
-      } else {
-        setLoading(true);
-      }
-      setError(null);
-
-      console.log('🔄 AchievementGridComponent: Making service call...');
-      const result = await getLatestAchievements();
-      
-      console.log('📊 AchievementGridComponent: Service result:', result);
-      
-      if (result && result.success) {
-        console.log('✅ AchievementGridComponent: Data received:', result.data);
-        console.log('📝 AchievementGridComponent: Number of achievements:', result.data?.length || 0);
-        
-        // Ensure we have a valid array
-        const achievementsArray = Array.isArray(result.data) ? result.data : [];
-        console.log('🔄 AchievementGridComponent: Setting achievements array with', achievementsArray.length, 'items');
-        
-        setAchievements(achievementsArray);
-      } else {
-        const errorMessage = 'Failed to load achievements - invalid response';
-        console.error('❌ AchievementGridComponent:', errorMessage);
-        setError(errorMessage);
-        if (onError) {
-          onError(errorMessage);
-        }
-      }
-    } catch (error) {
-      const errorMessage = `Failed to load achievements: ${error}`;
-      console.error('❌ AchievementGridComponent:', errorMessage);
-      setError(errorMessage);
-      if (onError) {
-        onError(errorMessage);
-      }
-    } finally {
-      setLoading(false);
-      setRefreshing(false);
-    }
-  };
-
-  const onRefresh = () => {
-    loadAchievements(true);
-  };
 
   const renderAchievementCard = ({ item }: { item: AchievementItem }) => (
     <View style={[styles.cardContainer, { width: itemWidth }]}>

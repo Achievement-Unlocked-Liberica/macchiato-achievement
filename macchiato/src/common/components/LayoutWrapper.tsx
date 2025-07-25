@@ -25,7 +25,6 @@ export const LayoutWrapper: React.FC<LayoutWrapperProps> = ({ children, footer }
         <MainHeaderComponent 
           showLogo={layoutState.header.showLogo}
           showProfile={layoutState.header.showProfile}
-          customTitle={layoutState.header.customTitle}
         />
       )}
       

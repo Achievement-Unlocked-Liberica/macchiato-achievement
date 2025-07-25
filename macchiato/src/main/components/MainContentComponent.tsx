@@ -1,21 +1,20 @@
 import React, { useEffect } from 'react';
-import { View, StyleSheet, ImageBackground } from 'react-native';
+import { View, StyleSheet, ImageBackground, Text, ActivityIndicator } from 'react-native';
 import { useAuthContext, useLayout } from '../../common/context';
 import AchievementListScreen from '../../achievement/screens/AchievementListScreen';
 
 export default function MainContentComponent() {
-  const { isAuthenticated } = useAuthContext();
+  const { isAuthenticated, loading, userProfile, profileLoading } = useAuthContext();
   const { updateLayout } = useLayout();
 
   useEffect(() => {
-    if (isAuthenticated) {
+    if (isAuthenticated && userProfile) {
       // Configure header for achievement list view - no title, just logo
       updateLayout({
         header: {
           visible: true,
           showLogo: true,
           showProfile: true,
-          customTitle: undefined,
         },
       });
     } else {
@@ -24,20 +23,43 @@ export default function MainContentComponent() {
         header: {
           visible: true,
           showLogo: true,
-          showProfile: false,
-          customTitle: undefined,
+          showProfile: true, // Keep profile widget to show sign-in button
         },
       });
     }
-  }, [isAuthenticated, updateLayout]);
+  }, [isAuthenticated, userProfile, updateLayout]);
+
+  // Show loading state during initial authentication check
+  if (loading) {
+    return (
+      <View style={styles.container}>
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#fac31e" />
+          <Text style={styles.loadingText}>Checking authentication...</Text>
+        </View>
+      </View>
+    );
+  }
+
+  // Show profile loading state if authenticated but still loading profile
+  if (isAuthenticated && profileLoading) {
+    return (
+      <View style={styles.container}>
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#fac31e" />
+          <Text style={styles.loadingText}>Loading user profile...</Text>
+        </View>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
-      {isAuthenticated ? (
-        // Show Achievement List Screen when user is authenticated
+      {isAuthenticated && userProfile ? (
+        // Show Achievement List Screen when user is authenticated and profile is loaded
         <AchievementListScreen />
       ) : (
-        // Show background image when user is not authenticated
+        // Show background image when user is not authenticated or profile not loaded
         <ImageBackground
           source={require('../../resources/icons/au icon sm.jpg')}
           style={styles.backgroundImage}
@@ -57,6 +79,18 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#1E252C', // primary-950 Main background
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#1E252C',
+  },
+  loadingText: {
+    color: '#FCFCFC',
+    fontSize: 16,
+    marginTop: 16,
+    textAlign: 'center',
   },
   backgroundImage: {
     flex: 1,

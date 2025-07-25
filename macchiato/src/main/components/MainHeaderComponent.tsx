@@ -5,13 +5,11 @@ import { UserProfileWidget } from '../../user/components';
 interface MainHeaderComponentProps {
   showProfile?: boolean;
   showLogo?: boolean;
-  customTitle?: string;
 }
 
 export default function MainHeaderComponent({ 
   showProfile = true, 
-  showLogo = true, 
-  customTitle 
+  showLogo = true
 }: MainHeaderComponentProps) {
   return (
     <View style={styles.container}>
@@ -23,11 +21,6 @@ export default function MainHeaderComponent({
           resizeMode="contain"
         />
       )}
-      
-      {/* Header Title */}
-      <Text style={styles.title}>
-        {customTitle || 'A U'}
-      </Text>
       
       {/* User Profile Widget */}
       {showProfile && <UserProfileWidget />}
@@ -57,13 +50,5 @@ const styles = StyleSheet.create({
   logo: {
     width: 48,
     height: 48,
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#FCFCFC', // light text for dark background
-    flex: 1,
-    textAlign: 'left',
-    marginHorizontal: 16,
   },
 });

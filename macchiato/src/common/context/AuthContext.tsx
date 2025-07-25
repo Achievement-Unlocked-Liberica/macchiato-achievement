@@ -43,20 +43,58 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setLoading(true);
     
     try {
+      // Step 1: Check if JWT token exists
       const authData = await TokenStorageService.getAuthData();
-      if (authData) {
-        console.log('✅ AuthProvider: User is authenticated:', authData.username);
-        setIsAuthenticated(true);
-        setUser(authData);
-      } else {
-        console.log('📭 AuthProvider: No authentication data found');
+      if (!authData) {
+        console.log('📭 AuthProvider: No JWT token found - setting to unauthenticated');
         setIsAuthenticated(false);
         setUser(null);
+        setUserProfile(null);
+        return;
       }
+
+      console.log('🔑 AuthProvider: JWT token found for user:', authData.username);
+      
+      // Step 2: Try to get user profile first before making any other calls
+      try {
+        console.log('👤 AuthProvider: Attempting to retrieve user profile...');
+        const profile = await UserService.getUserProfile();
+        
+        // Step 3: If profile retrieval is successful, set app to authenticated
+        console.log('✅ AuthProvider: User profile retrieved successfully - setting to authenticated');
+        setIsAuthenticated(true);
+        setUser(authData);
+        setUserProfile(profile);
+        profileFetchedRef.current = true;
+        
+      } catch (profileError: any) {
+        // Step 4: If profile call returns 'unauthenticated', set app to unauthenticated
+        console.error('❌ AuthProvider: Failed to get user profile:', profileError);
+        
+        if (profileError.statusCode === 401 || 
+            (profileError.message && profileError.message.toLowerCase().includes('unauthenticated'))) {
+          console.log('� AuthProvider: Profile call returned unauthenticated - clearing auth and setting to unauthenticated');
+          await TokenStorageService.clearAuthData();
+          setIsAuthenticated(false);
+          setUser(null);
+          setUserProfile(null);
+          profileFetchedRef.current = false;
+        } else {
+          // For other errors, still set as authenticated but without profile
+          console.log('⚠️ AuthProvider: Profile error but token valid - setting authenticated without profile');
+          setIsAuthenticated(true);
+          setUser(authData);
+          setUserProfile(null);
+          profileFetchedRef.current = false;
+        }
+      }
+      
     } catch (error) {
       console.error('❌ AuthProvider: Failed to check auth status:', error);
       setIsAuthenticated(false);
       setUser(null);
+      setUserProfile(null);
+      profileFetchedRef.current = false;
     } finally {
       setLoading(false);
     }
@@ -91,9 +129,21 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       profileFetchedRef.current = true;
       console.log('✅ User profile retrieved and cached in AuthContext');
       return profile;
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Failed to get user profile:', error);
-      profileFetchedRef.current = false;
+      
+      // If the service returns unauthenticated, clear auth and set app to unauthenticated
+      if (error.statusCode === 401 || 
+          (error.message && error.message.toLowerCase().includes('unauthenticated'))) {
+        console.log('🚫 AuthProvider: Profile call returned unauthenticated - clearing auth and setting to unauthenticated');
+        await TokenStorageService.clearAuthData();
+        setIsAuthenticated(false);
+        setUser(null);
+        setUserProfile(null);
+        profileFetchedRef.current = false;
+      } else {
+        profileFetchedRef.current = false;
+      }
       return null;
     } finally {
       setProfileLoading(false);

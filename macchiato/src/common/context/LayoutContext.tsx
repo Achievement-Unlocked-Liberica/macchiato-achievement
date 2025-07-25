@@ -12,7 +12,6 @@ export interface LayoutState {
     visible: boolean;
     showLogo: boolean;
     showProfile: boolean;
-    customTitle?: string;
   };
 }
 

@@ -14,7 +14,6 @@ export default function MainScreen() {
         visible: true, 
         showLogo: true, 
         showProfile: true,
-        customTitle: 'A. Unlocked'
       },
     });
   }, [updateLayout]);

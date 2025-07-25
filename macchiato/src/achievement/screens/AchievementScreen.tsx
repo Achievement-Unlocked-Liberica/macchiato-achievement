@@ -1,7 +1,13 @@
 /**
  * AchievementScreen
- * 
- * Screen for managing achievements, starting with creation
+ *     // Configure layout for achievement creation screen
+    updateLayout({
+      header: {
+        visible: true,
+        showLogo: true,
+        showProfile: true,
+      },
+    });n for managing achievements, starting with creation
  */
 
 import React, { useEffect, useRef, useState } from 'react';
@@ -35,7 +41,6 @@ export default function AchievementScreen() {
         visible: true,
         showLogo: true,
         showProfile: true,
-        customTitle: 'Create Achievement',
       },
     });
   }, [updateLayout]);

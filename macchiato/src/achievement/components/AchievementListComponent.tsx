@@ -5,73 +5,28 @@
  * with loading states, error handling, and refresh functionality
  */
 
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { View, FlatList, Text, StyleSheet, RefreshControl } from 'react-native';
-import { useAchievement } from '../hooks/useAchievement';
 import { AchievementItem } from '../services/responses';
 import AchievementItemWidget from './AchievementItemWidget';
 
 interface AchievementListComponentProps {
+  achievements: AchievementItem[];
+  loading: boolean;
+  refreshing: boolean;
+  error: string | null;
+  onRefresh: () => void;
   onError?: (error: string) => void;
 }
 
 const AchievementListComponent: React.FC<AchievementListComponentProps> = ({ 
+  achievements,
+  loading,
+  refreshing,
+  error,
+  onRefresh,
   onError
 }) => {
-  const { getLatestAchievements } = useAchievement();
-  const [achievements, setAchievements] = useState<AchievementItem[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  // Load achievements on component mount
-  useEffect(() => {
-    loadAchievements();
-  }, []);
-
-  const loadAchievements = async (isRefresh = false) => {
-    try {
-      if (isRefresh) {
-        setRefreshing(true);
-      } else {
-        setLoading(true);
-      }
-      setError(null);
-
-      console.log('🔄 AchievementListComponent: Making service call...');
-      const result = await getLatestAchievements();
-      
-      console.log('📊 AchievementListComponent: Service result:', result);
-      
-      if (result && result.success) {
-        console.log('✅ AchievementListComponent: Data received:', result.data);
-        console.log('📝 AchievementListComponent: Number of achievements:', result.data?.length || 0);
-        
-        // Ensure we have a valid array
-        const achievementsArray = Array.isArray(result.data) ? result.data : [];
-        console.log('🔄 AchievementListComponent: Setting achievements array with', achievementsArray.length, 'items');
-        
-        setAchievements(achievementsArray);
-      } else {
-        console.log('❌ AchievementListComponent: Service call failed');
-        const errorMessage = 'Failed to load achievements';
-        setError(errorMessage);
-        onError?.(errorMessage);
-      }
-    } catch (err) {
-      console.log('💥 AchievementListComponent: Exception caught:', err);
-      const errorMessage = err instanceof Error ? err.message : 'An unexpected error occurred';
-      setError(errorMessage);
-      onError?.(errorMessage);
-    } finally {
-      setLoading(false);
-      setRefreshing(false);
-    }
-  };
-
-  const handleRefresh = () => {
-    loadAchievements(true);
-  };
 
   const renderItem = ({ item }: { item: AchievementItem }) => {
     console.log('🎯 AchievementListComponent: Rendering item:', item.title);
@@ -124,7 +79,7 @@ const AchievementListComponent: React.FC<AchievementListComponentProps> = ({
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
-            onRefresh={handleRefresh}
+            onRefresh={onRefresh}
             tintColor="#9FB3C8"
             colors={['#9FB3C8']}
           />
@@ -141,7 +96,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   listContainer: {
-    paddingHorizontal: 16,
+    paddingHorizontal: 4,
     paddingBottom: 20,
   },
   emptyListContainer: {

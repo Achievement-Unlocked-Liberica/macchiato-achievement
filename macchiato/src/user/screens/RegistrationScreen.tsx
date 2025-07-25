@@ -28,7 +28,6 @@ export default function RegistrationScreen() {
         visible: true,
         showLogo: true,
         showProfile: true,
-        customTitle: 'Sign In | Register',
       },
     });
   }, [updateLayout]);

@@ -12,6 +12,8 @@ export { default as AchievementItemWidget } from './AchievementItemWidget';
 export { default as AchievementGridComponent } from './AchievementGridComponent';
 export { default as AchievementCardWidget } from './AchievementCardWidget';
 export { default as AchievementFilterWidget } from './AchievementFilterWidget';
+export { SkillsMultiSelect } from './SkillsMultiSelect';
 
 // Re-export types
 export type { AchievementFormRef } from './AchievementForm';
+export type { SkillsMultiSelectProps } from './SkillsMultiSelect';

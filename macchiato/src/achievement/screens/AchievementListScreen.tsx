@@ -5,14 +5,70 @@
  * with navigation header, filter widget, and proper layout structure
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, StyleSheet } from 'react-native';
 import AchievementListComponent from '../components/AchievementListComponent';
 import AchievementGridComponent from '../components/AchievementGridComponent';
 import AchievementFilterWidget from '../components/AchievementFilterWidget';
+import { useAchievement } from '../hooks/useAchievement';
+import { AchievementItem } from '../services/responses';
 
 const AchievementListScreen: React.FC = () => {
   const [viewMode, setViewMode] = useState<'list' | 'grid'>('list');
+  const { getLatestAchievements } = useAchievement();
+  const [achievements, setAchievements] = useState<AchievementItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  // Load achievements on component mount
+  useEffect(() => {
+    loadAchievements();
+  }, []);
+
+  const loadAchievements = async (isRefresh = false) => {
+    try {
+      if (isRefresh) {
+        setRefreshing(true);
+      } else {
+        setLoading(true);
+      }
+      setError(null);
+
+      console.log('🔄 AchievementListScreen: Making service call...');
+      const result = await getLatestAchievements();
+      
+      console.log('📊 AchievementListScreen: Service result:', result);
+      
+      if (result && result.success) {
+        console.log('✅ AchievementListScreen: Data received:', result.data);
+        console.log('📝 AchievementListScreen: Number of achievements:', result.data?.length || 0);
+        
+        // Ensure we have a valid array
+        const achievementsArray = Array.isArray(result.data) ? result.data : [];
+        console.log('🔄 AchievementListScreen: Setting achievements array with', achievementsArray.length, 'items');
+        
+        setAchievements(achievementsArray);
+      } else {
+        console.log('❌ AchievementListScreen: Service call failed');
+        const errorMessage = 'Failed to load achievements';
+        setError(errorMessage);
+        handleError(errorMessage);
+      }
+    } catch (err) {
+      console.log('💥 AchievementListScreen: Exception caught:', err);
+      const errorMessage = err instanceof Error ? err.message : 'An unexpected error occurred';
+      setError(errorMessage);
+      handleError(errorMessage);
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
+  };
+
+  const handleRefresh = () => {
+    loadAchievements(true);
+  };
 
   const handleError = (error: string) => {
     console.error('Achievement List Error:', error);
@@ -36,9 +92,23 @@ const AchievementListScreen: React.FC = () => {
       
       {/* Content based on view mode */}
       {viewMode === 'list' ? (
-        <AchievementListComponent onError={handleError} />
+        <AchievementListComponent 
+          achievements={achievements}
+          loading={loading}
+          refreshing={refreshing}
+          error={error}
+          onRefresh={handleRefresh}
+          onError={handleError} 
+        />
       ) : (
-        <AchievementGridComponent onError={handleError} />
+        <AchievementGridComponent 
+          achievements={achievements}
+          loading={loading}
+          refreshing={refreshing}
+          error={error}
+          onRefresh={handleRefresh}
+          onError={handleError} 
+        />
       )}
     </View>
   );

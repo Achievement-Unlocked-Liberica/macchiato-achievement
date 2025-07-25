@@ -4,6 +4,7 @@ import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { AddAchievementAction } from './FooterActions';
 import { LAYOUT_CONSTANTS } from '../../common/constants/layoutConstants';
+import { useAuthContext } from '../../common/context';
 
 interface MainFooterComponentProps {
   showMainActions?: boolean;
@@ -24,22 +25,24 @@ export default function MainFooterComponent({
   customActions 
 }: MainFooterComponentProps) {
   const navigation = useNavigation<NavigationProp>();
+  const { isAuthenticated, userProfile } = useAuthContext();
 
   const handleAddAchievement = () => {
     navigation.navigate('Achievement');
   };
 
+  // Only show actions if user is authenticated and has a valid profile
+  const shouldShowActions = showMainActions && isAuthenticated && userProfile;
+
   return (
     <View style={styles.container}>
-      {showMainActions ? (
+      {shouldShowActions ? (
         <View style={styles.actionsContainer}>
           {customActions || <AddAchievementAction onPress={handleAddAchievement} />}
         </View>
       ) : (
         <View style={styles.defaultContent}>
-          <Text style={styles.authLabel}>
-            auth tokens cleared on exit
-          </Text>
+          {/* Empty footer when not authenticated */}
         </View>
       )}
     </View>

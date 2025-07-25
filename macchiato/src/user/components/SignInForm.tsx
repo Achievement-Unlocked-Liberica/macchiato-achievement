@@ -3,7 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faRightToBracket, faUserPlus, faExclamation } from '@fortawesome/free-solid-svg-icons';
+import { faRightToBracket, faUserPlus, faExclamation, faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import { faGoogle, faFacebookF, faGithub, faLinkedinIn } from '@fortawesome/free-brands-svg-icons';
 import { useForm } from '../../common/hooks';
 import { SignInFormData, signInValidationRules } from '../validation';
@@ -38,6 +38,9 @@ const SignInForm = forwardRef<SignInFormRef, SignInFormProps>(({ onSubmit, onLoa
   const navigation = useNavigation<NavigationProp>();
   const { authenticate, loading, error } = useAuthentication();
   const { setAuthData } = useAuthContext();
+  
+  // State for password visibility
+  const [showPassword, setShowPassword] = useState(false);
   
   // Use the form hook for state management and validation
   const {
@@ -177,18 +180,32 @@ const SignInForm = forwardRef<SignInFormRef, SignInFormProps>(({ onSubmit, onLoa
       {/* Password Field */}
       <View className="mb-6">
         <Text className="text-text-primary font-medium mb-2 text-base">Password</Text>
-        <TextInput
-          className={`border rounded-lg px-4 py-3 text-base bg-background-secondary text-text-primary ${
-            errors.password ? 'border-error-500 border-2' : 'border-border-secondary'
-          }`}
-          placeholder="Enter your password"
-          placeholderTextColor="#9FB3C8"
-          value={formData.password}
-          onChangeText={(value) => handleInputChange('password', value)}
-          secureTextEntry={true}
-          autoCapitalize="none"
-          autoCorrect={false}
-        />
+        <View className="relative">
+          <TextInput
+            className={`border rounded-lg px-4 py-3 pr-12 text-base bg-background-secondary text-text-primary ${
+              errors.password ? 'border-error-500 border-2' : 'border-border-secondary'
+            }`}
+            placeholder="Enter your password"
+            placeholderTextColor="#9FB3C8"
+            value={formData.password}
+            onChangeText={(value) => handleInputChange('password', value)}
+            secureTextEntry={!showPassword}
+            autoCapitalize="none"
+            autoCorrect={false}
+          />
+          <TouchableOpacity
+            className="absolute right-3 top-3 p-1"
+            onPressIn={() => setShowPassword(true)}
+            onPressOut={() => setShowPassword(false)}
+            activeOpacity={0.7}
+          >
+            <FontAwesomeIcon 
+              icon={showPassword ? faEye : faEyeSlash} 
+              size={20} 
+              color="#9FB3C8" 
+            />
+          </TouchableOpacity>
+        </View>
         {errors.password && <ErrorAlert message={errors.password} />}
       </View>
 

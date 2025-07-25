@@ -1,5 +1,5 @@
 /**
- * MultiSelectSkills Component
+ * SkillsMultiSelect Component
  * 
  * Multi-select dropdown for selecting skills
  */
@@ -10,14 +10,14 @@ import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faChevronDown, faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { AVAILABLE_SKILLS, Skill } from '../models/skills';
 
-interface MultiSelectSkillsProps {
+export interface SkillsMultiSelectProps {
   selectedSkills: string[];
   onSelectionChange: (skillIds: string[]) => void;
   placeholder?: string;
   error?: string;
 }
 
-export const MultiSelectSkills: React.FC<MultiSelectSkillsProps> = ({
+export const SkillsMultiSelect: React.FC<SkillsMultiSelectProps> = ({
   selectedSkills,
   onSelectionChange,
   placeholder = 'Select skills...',
