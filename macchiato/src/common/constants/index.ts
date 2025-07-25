@@ -4,4 +4,3 @@
 
 export * from './appConstants';
 export * from './layoutConstants';
-export * from './skillsConstants';

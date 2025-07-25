@@ -34,10 +34,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 12,
-    paddingVertical: 4,
+    paddingVertical: 2,
     backgroundColor: '#1E252C', // primary-950 main background color
-    borderBottomWidth: 1,
-    borderBottomColor: '#E5E7EB',
+    // borderBottomWidth: 1,
+    // borderBottomColor: '#E5E7EB',
     elevation: 2,
     shadowColor: '#000',
     shadowOffset: {

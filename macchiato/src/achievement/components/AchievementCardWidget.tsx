@@ -8,7 +8,8 @@
 import React from 'react';
 import { View, Text, Image, StyleSheet } from 'react-native';
 import { AchievementItem } from '../services/responses';
-import { SkillDisplaySmWidget, SocialDisplaySmWidget } from '../../common/components';
+import { SkillDisplaySmWidget } from '../../skills';
+import { SocialDisplaySmWidget } from '../../social';
 
 interface AchievementCardWidgetProps {
   achievement: AchievementItem;

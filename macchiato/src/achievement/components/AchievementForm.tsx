@@ -13,7 +13,7 @@ import { useAuthContext } from '../../common/context';
 import { useAchievement } from '../hooks/useAchievement';
 import CustomDatePicker from '../../common/components/CustomDatePicker';
 import AchievementMediaWidget, { AchievementMediaWidgetRef } from './AchievementMediaWidget';
-import { SkillSelectionWidget, SkillSelectionWidgetRef } from '../../common/components/SkillSelectionWidget';
+import { SkillSelectionWidget, SkillSelectionWidgetRef } from '../../skills';
 import { AchievementFormData, achievementValidationRules } from '../validation/achievementValidation';
 import { CreateAchievementCommand } from '../services/commands';
 

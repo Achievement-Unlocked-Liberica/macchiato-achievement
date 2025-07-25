@@ -160,10 +160,10 @@ export const SubmitAction: React.FC<{ onPress: () => void; disabled?: boolean }>
 
 // Circular Add Achievement Action for main screen
 export const AddAchievementAction: React.FC<{ onPress: () => void }> = ({ onPress }) => (
-  <TouchableOpacity style={buttonStyles.buttonLgPrimary} onPress={onPress}>
+  <TouchableOpacity style={buttonStyles.buttonMdPrimary} onPress={onPress}>
     <FontAwesomeIcon 
       icon={faPlus} 
-      size={20} 
+      size={16} 
       color="#171717" 
     />
   </TouchableOpacity>

@@ -40,18 +40,8 @@ export default function SignInScreen() {
   const handleFormSubmit = (formData: FormData) => {
     console.log('Sign in form submitted:', formData);
     
-    // TODO: Implement actual sign in API call here
-    // For now, we'll show a success message and navigate back
-    Alert.alert(
-      'Sign In Successful',
-      `Welcome back, ${formData.username}!`,
-      [
-        {
-          text: 'OK',
-          onPress: () => navigation.navigate('Main'),
-        },
-      ]
-    );
+    // Navigate back to main screen after successful sign in
+    navigation.navigate('Main');
   };
 
   const handleCancel = () => {

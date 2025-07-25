@@ -79,13 +79,6 @@ const SignInForm = forwardRef<SignInFormRef, SignInFormProps>(({ onSubmit, onLoa
             email: result.data.email,
           });
           
-          // Show success popup with userKey and token
-          Alert.alert(
-            'Authentication Successful',
-            `User Key: ${result.data.userKey}\nToken: ${result.data.token.substring(0, 50)}...`,
-            [{ text: 'OK' }]
-          );
-          
           // Call the onSubmit callback
           onSubmit(data);
         }
