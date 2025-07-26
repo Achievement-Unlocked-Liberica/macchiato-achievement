@@ -5,6 +5,15 @@
  * for use across multiple components throughout the application.
  */
 
+// Skill button sizes configuration for consistent sizing across components
+export const SKILL_BUTTON_SIZES = {
+  xs: 10,   // Achievement card widget
+  sm: 12,  // Current default
+  md: 24,  // Achievement details widget
+  lg: 36,  // Achievement form
+  xl: 48,  // Extra large for special displays
+} as const;
+
 // Centralized skill color configuration for easy modification
 export const SKILL_COLORS = {
   str: '#C0392B', // Strength

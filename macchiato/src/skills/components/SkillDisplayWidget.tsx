@@ -26,6 +26,7 @@ export const SkillDisplayWidget: React.FC<SkillDisplayWidgetProps> = ({
 }) => {
   const buttonSize = SKILL_BUTTON_SIZES[size];
   const borderRadius = buttonSize / 2;
+  
   const renderSkillCircle = (skill: SkillConfig, style: any) => {
     const isSelected = selectedSkills.includes(skill.id);
     

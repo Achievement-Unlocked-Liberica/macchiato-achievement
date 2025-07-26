@@ -5,16 +5,36 @@
  */
 
 import React from 'react';
-import { View, Text, Image, StyleSheet } from 'react-native';
+import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
 import { AchievementItem } from '../services/responses';
-import { SkillDisplaySmWidget } from '../../skills';
-import { SocialDisplaySmWidget } from '../../social';
+import { SkillDisplayWidget } from '../../skills/components/SkillDisplayWidget';
+import { SocialDisplayWidget } from '../../social/components/SocialDisplayWidget';
+
+// Navigation types
+type RootStackParamList = {
+  AchievementDetails: { achievement: AchievementItem };
+};
+
+type NavigationProp = StackNavigationProp<RootStackParamList>;
 
 interface AchievementItemWidgetProps {
   achievement: AchievementItem;
+  onPress?: () => void;
 }
 
-const AchievementItemWidget: React.FC<AchievementItemWidgetProps> = ({ achievement }) => {
+const AchievementItemWidget: React.FC<AchievementItemWidgetProps> = ({ achievement, onPress }) => {
+  const navigation = useNavigation<NavigationProp>();
+
+  // Handle item press - either use custom onPress or navigate to achievement details
+  const handlePress = () => {
+    if (onPress) {
+      onPress();
+    } else {
+      navigation.navigate('AchievementDetails', { achievement });
+    }
+  };
   // Format date as "Jan 15 2024"
   const formatDate = (dateString?: string) => {
     if (!dateString) return '';
@@ -50,10 +70,10 @@ const AchievementItemWidget: React.FC<AchievementItemWidgetProps> = ({ achieveme
     return require('../../resources/icons/au icon sm.jpg');
   };
 
-  // Render skills using the SkillDisplaySmWidget
+  // Render skills using the SkillDisplayWidget
   const renderSkills = () => {
     const skills = achievement.skills || [];
-    return <SkillDisplaySmWidget selectedSkills={skills} />;
+    return <SkillDisplayWidget selectedSkills={skills} size="xs" layout="flat" />;
   };
 
   const imageUrl = getImageUrl();
@@ -61,7 +81,7 @@ const AchievementItemWidget: React.FC<AchievementItemWidgetProps> = ({ achieveme
   const formattedDate = formatDate(achievement.completedDate);
 
   return (
-    <View style={styles.container}>
+    <TouchableOpacity style={styles.container} onPress={handlePress} activeOpacity={0.8}>
       {/* Left: Achievement Image */}
       <View style={styles.imageContainer}>
         <Image
@@ -71,7 +91,7 @@ const AchievementItemWidget: React.FC<AchievementItemWidgetProps> = ({ achieveme
         />
       </View>
 
-      {/* Center: Title and Date */}
+      {/* Center: Title, Skills, and Social */}
       <View style={styles.contentContainer}>
         {/* Title and Date section */}
         <View style={styles.titleSection}>
@@ -83,17 +103,26 @@ const AchievementItemWidget: React.FC<AchievementItemWidgetProps> = ({ achieveme
           ) : null}
         </View>
         
-        {/* Social counters section */}
-        <View style={styles.socialSection}>
-          <SocialDisplaySmWidget />
+        {/* Bottom section with skills above social */}
+        <View style={styles.bottomSection}>
+          {/* Skills in flat mode */}
+          <View style={styles.skillsFlat}>
+            <SkillDisplayWidget
+              selectedSkills={achievement.skills || []}
+              layout="flat"
+              size="xs"
+            />
+          </View>
+          
+          {/* Social counters below skills */}
+          <View style={styles.socialSection}>
+            <SocialDisplayWidget 
+              size="xs" 
+            />
+          </View>
         </View>
       </View>
-
-      {/* Right: Skills */}
-      <View style={styles.skillsSection}>
-        {renderSkills()}
-      </View>
-    </View>
+    </TouchableOpacity>
   );
 };
 
@@ -131,6 +160,14 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'flex-start',
   },
+  bottomSection: {
+    justifyContent: 'flex-end',
+    alignItems: 'flex-start',
+    marginTop: 'auto',
+  },
+  skillsFlat: {    
+    marginBottom: 4,
+  },
   title: {
     color: '#FCFCFC',
     fontSize: 14,
@@ -144,14 +181,6 @@ const styles = StyleSheet.create({
   },
   socialSection: {
     marginTop: 2,
-  },
-  skillsSection: {
-    width: 50,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginLeft: 8,
-    marginRight: 8, // Add right margin to prevent touching the border
-    padding: 8, // Add padding to all sides of the skills section
   },
 });
 

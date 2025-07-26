@@ -6,16 +6,36 @@
  */
 
 import React from 'react';
-import { View, Text, Image, StyleSheet } from 'react-native';
+import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
 import { AchievementItem } from '../services/responses';
-import { SkillDisplaySmWidget } from '../../skills';
-import { SocialDisplaySmWidget } from '../../social';
+import { SkillDisplayWidget } from '../../skills/components/SkillDisplayWidget';
+import { SocialDisplayWidget } from '../../social/components/SocialDisplayWidget';
+
+// Navigation types
+type RootStackParamList = {
+  AchievementDetails: { achievement: AchievementItem };
+};
+
+type NavigationProp = StackNavigationProp<RootStackParamList>;
 
 interface AchievementCardWidgetProps {
   achievement: AchievementItem;
+  onPress?: () => void;
 }
 
-const AchievementCardWidget: React.FC<AchievementCardWidgetProps> = ({ achievement }) => {
+const AchievementCardWidget: React.FC<AchievementCardWidgetProps> = ({ achievement, onPress }) => {
+  const navigation = useNavigation<NavigationProp>();
+
+  // Handle card press - either use custom onPress or navigate to achievement details
+  const handlePress = () => {
+    if (onPress) {
+      onPress();
+    } else {
+      navigation.navigate('AchievementDetails', { achievement });
+    }
+  };
   // Get the first media URL or use a placeholder
   const getImageUrl = () => {
     if (achievement.media && achievement.media.length > 0) {
@@ -34,13 +54,14 @@ const AchievementCardWidget: React.FC<AchievementCardWidgetProps> = ({ achieveme
     return require('../../resources/icons/au icon sm.jpg');
   };
 
-  // Render skills using the SkillDisplaySmWidget with flat layout and transparent background
+  // Render skills using the SkillDisplayWidget with flat layout and transparent background
   const renderSkills = () => {
     const skills = achievement.skills || [];
     return (
-      <SkillDisplaySmWidget 
+      <SkillDisplayWidget 
         selectedSkills={skills} 
         layout="flat" 
+        size="xs"
         containerStyle={styles.skillsTransparent}
       />
     );
@@ -49,7 +70,7 @@ const AchievementCardWidget: React.FC<AchievementCardWidgetProps> = ({ achieveme
   const imageSource = getImageSource();
 
   return (
-    <View style={styles.container}>
+    <TouchableOpacity style={styles.container} onPress={handlePress} activeOpacity={0.8}>
       {/* Achievement Image with bottom overlay rectangle */}
       <View style={styles.imageContainer}>
         <Image
@@ -66,7 +87,7 @@ const AchievementCardWidget: React.FC<AchievementCardWidgetProps> = ({ achieveme
 
       {/* Social Counters */}
       <View style={styles.socialContainer}>
-        <SocialDisplaySmWidget />
+        <SocialDisplayWidget size="xs" />
       </View>
 
       {/* Title */}
@@ -75,7 +96,7 @@ const AchievementCardWidget: React.FC<AchievementCardWidgetProps> = ({ achieveme
           {achievement.title}
         </Text>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 };
 

@@ -6,3 +6,4 @@
 
 export { default as AchievementScreen } from './AchievementScreen';
 export { default as AchievementListScreen } from './AchievementListScreen';
+export { default as AchievementDetailsScreen } from './AchievementDetailsScreen';

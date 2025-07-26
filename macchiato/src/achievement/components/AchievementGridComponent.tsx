@@ -17,6 +17,7 @@ interface AchievementGridComponentProps {
   error: string | null;
   onRefresh: () => void;
   onError?: (error: string) => void;
+  onAchievementSelect?: (achievement: AchievementItem) => void;
 }
 
 const AchievementGridComponent: React.FC<AchievementGridComponentProps> = ({ 
@@ -25,7 +26,8 @@ const AchievementGridComponent: React.FC<AchievementGridComponentProps> = ({
   refreshing,
   error,
   onRefresh,
-  onError 
+  onError,
+  onAchievementSelect
 }) => {
   // Get screen width for responsive grid
   const screenWidth = Dimensions.get('window').width;
@@ -33,7 +35,10 @@ const AchievementGridComponent: React.FC<AchievementGridComponentProps> = ({
 
   const renderAchievementCard = ({ item }: { item: AchievementItem }) => (
     <View style={[styles.cardContainer, { width: itemWidth }]}>
-      <AchievementCardWidget achievement={item} />
+      <AchievementCardWidget 
+        achievement={item}
+        onPress={onAchievementSelect ? () => onAchievementSelect(item) : undefined}
+      />
     </View>
   );
 

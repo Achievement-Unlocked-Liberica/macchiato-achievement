@@ -10,11 +10,13 @@ import { View, StyleSheet } from 'react-native';
 import AchievementListComponent from '../components/AchievementListComponent';
 import AchievementGridComponent from '../components/AchievementGridComponent';
 import AchievementFilterWidget from '../components/AchievementFilterWidget';
+import AchievementDetailsComponent from '../components/AchievementDetailsComponent';
 import { useAchievement } from '../hooks/useAchievement';
 import { AchievementItem } from '../services/responses';
 
 const AchievementListScreen: React.FC = () => {
   const [viewMode, setViewMode] = useState<'list' | 'grid'>('list');
+  const [selectedAchievement, setSelectedAchievement] = useState<AchievementItem | null>(null);
   const { getLatestAchievements } = useAchievement();
   const [achievements, setAchievements] = useState<AchievementItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -75,40 +77,62 @@ const AchievementListScreen: React.FC = () => {
     // In a real app, you might want to show a toast or alert here
   };
 
+  const handleAchievementSelect = (achievement: AchievementItem) => {
+    console.log('🎯 AchievementListScreen: Achievement selected:', achievement.title);
+    setSelectedAchievement(achievement);
+  };
+
+  const handleBackToList = () => {
+    console.log('🔙 AchievementListScreen: Going back to list view');
+    setSelectedAchievement(null);
+  };
+
   const handleViewModeChange = (mode: 'list' | 'grid') => {
     console.log('🔄 AchievementListScreen: View mode changing to:', mode);
     setViewMode(mode);
   };
 
-  console.log('🎬 AchievementListScreen: Rendering with viewMode:', viewMode);
+  console.log('🎬 AchievementListScreen: Rendering with viewMode:', viewMode, 'selectedAchievement:', selectedAchievement?.title || 'none');
 
   return (
     <View style={styles.container}>
-      {/* Filter Widget - Always visible at the top */}
-      <AchievementFilterWidget 
-        viewMode={viewMode} 
-        onViewModeChange={handleViewModeChange} 
-      />
+      {/* Filter Widget - Only visible when no achievement is selected */}
+      {!selectedAchievement && (
+        <AchievementFilterWidget 
+          viewMode={viewMode} 
+          onViewModeChange={handleViewModeChange} 
+        />
+      )}
       
-      {/* Content based on view mode */}
-      {viewMode === 'list' ? (
-        <AchievementListComponent 
-          achievements={achievements}
-          loading={loading}
-          refreshing={refreshing}
-          error={error}
-          onRefresh={handleRefresh}
-          onError={handleError} 
+      {/* Content based on selection state */}
+      {selectedAchievement ? (
+        <AchievementDetailsComponent 
+          achievement={selectedAchievement}
+          onBack={handleBackToList}
         />
       ) : (
-        <AchievementGridComponent 
-          achievements={achievements}
-          loading={loading}
-          refreshing={refreshing}
-          error={error}
-          onRefresh={handleRefresh}
-          onError={handleError} 
-        />
+        /* Content based on view mode */
+        viewMode === 'list' ? (
+          <AchievementListComponent 
+            achievements={achievements}
+            loading={loading}
+            refreshing={refreshing}
+            error={error}
+            onRefresh={handleRefresh}
+            onError={handleError}
+            onAchievementSelect={handleAchievementSelect}
+          />
+        ) : (
+          <AchievementGridComponent 
+            achievements={achievements}
+            loading={loading}
+            refreshing={refreshing}
+            error={error}
+            onRefresh={handleRefresh}
+            onError={handleError}
+            onAchievementSelect={handleAchievementSelect}
+          />
+        )
       )}
     </View>
   );

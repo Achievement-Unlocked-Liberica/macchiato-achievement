@@ -17,6 +17,7 @@ interface AchievementListComponentProps {
   error: string | null;
   onRefresh: () => void;
   onError?: (error: string) => void;
+  onAchievementSelect?: (achievement: AchievementItem) => void;
 }
 
 const AchievementListComponent: React.FC<AchievementListComponentProps> = ({ 
@@ -25,12 +26,18 @@ const AchievementListComponent: React.FC<AchievementListComponentProps> = ({
   refreshing,
   error,
   onRefresh,
-  onError
+  onError,
+  onAchievementSelect
 }) => {
 
   const renderItem = ({ item }: { item: AchievementItem }) => {
     console.log('🎯 AchievementListComponent: Rendering item:', item.title);
-    return <AchievementItemWidget achievement={item} />;
+    return (
+      <AchievementItemWidget 
+        achievement={item} 
+        onPress={onAchievementSelect ? () => onAchievementSelect(item) : undefined}
+      />
+    );
   };
 
   const renderEmptyState = () => (
