@@ -5,7 +5,7 @@
  */
 
 import React, { useState, useEffect, forwardRef, useImperativeHandle, useRef } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Alert, ScrollView, StyleSheet } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, Alert, ScrollView, StyleSheet, KeyboardAvoidingView, Platform } from 'react-native';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faCheck, faXmark, faCalendar, faExclamation } from '@fortawesome/free-solid-svg-icons';
 import { useForm } from '../../common/hooks';
@@ -195,7 +195,16 @@ const AchievementForm = forwardRef<AchievementFormRef, AchievementFormProps>(({ 
   );
 
   return (
-    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+    <KeyboardAvoidingView 
+      style={{ flex: 1 }}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
+    >
+      <ScrollView 
+        style={styles.container} 
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+      >
       <View style={styles.formContainer}>
         {/* Achievement Media Widget */}
         <AchievementMediaWidget 
@@ -296,6 +305,7 @@ const AchievementForm = forwardRef<AchievementFormRef, AchievementFormProps>(({ 
         title="Date Achieved"
       />
     </ScrollView>
+    </KeyboardAvoidingView>
   );
 });
 

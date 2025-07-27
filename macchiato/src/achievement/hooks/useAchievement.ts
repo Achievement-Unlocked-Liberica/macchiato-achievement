@@ -8,7 +8,7 @@ import { useCallback } from 'react';
 import { useAPI } from '../../common/hooks';
 import { AchievementService } from '../services/achievementService';
 import { CreateAchievementCommand, UploadAchievementMediaCommand } from '../services/commands';
-import { CreateAchievementResponse, UploadAchievementMediaResponse, GetAchievementItemsResponse } from '../services/responses';
+import { CreateAchievementResponse, UploadAchievementMediaResponse, GetAchievementItemsResponse, GetAchievementDetailResponse } from '../services/responses';
 
 export const useAchievement = () => {
   const { loading, error, execute, clearError } = useAPI();
@@ -57,12 +57,23 @@ export const useAchievement = () => {
     });
   }, [execute, loading]);
 
+  const getAchievementDetail = useCallback(async (entityKey: string): Promise<GetAchievementDetailResponse | null> => {
+    console.log('🎯 useAchievement.getAchievementDetail() called');
+    console.log('📋 Entity Key:', entityKey);
+
+    return execute(() => {
+      console.log('🔄 Executing AchievementService.getAchievementDetail...');
+      return AchievementService.getAchievementDetail(entityKey);
+    });
+  }, [execute]); // Remove loading from dependencies to prevent recreation
+
   return {
     loading,
     error,
     createAchievement,
     uploadAchievementMedia,
     getLatestAchievements,
+    getAchievementDetail,
     clearError,
   };
 };

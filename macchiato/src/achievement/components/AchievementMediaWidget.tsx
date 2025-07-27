@@ -5,9 +5,9 @@
  */
 
 import React, { useState, forwardRef, useImperativeHandle } from 'react';
-import { View, TouchableOpacity, Image, StyleSheet, Alert, Text } from 'react-native';
+import { View, TouchableOpacity, Image, StyleSheet, Alert, Text, PanResponder, Dimensions } from 'react-native';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faCamera, faTimes, faChevronLeft, faChevronRight, faImages } from '@fortawesome/free-solid-svg-icons';
+import { faCamera, faTimes, faImages } from '@fortawesome/free-solid-svg-icons';
 import * as ImagePicker from 'expo-image-picker';
 import * as ImageManipulator from 'expo-image-manipulator';
 import { MAX_ACHIEVEMENT_IMAGES } from '../../common/constants/achievementConstants';
@@ -203,22 +203,33 @@ const AchievementMediaWidget = forwardRef<AchievementMediaWidgetRef, Achievement
       }
     };
 
+    // Pan responder for swipe gestures
+    const panResponder = PanResponder.create({
+      onMoveShouldSetPanResponder: (evt, gestureState) => {
+        // Only respond to horizontal swipes with multiple images
+        return imageUris.length > 1 && Math.abs(gestureState.dx) > Math.abs(gestureState.dy) && Math.abs(gestureState.dx) > 10;
+      },
+      onPanResponderRelease: (evt, gestureState) => {
+        const screenWidth = Dimensions.get('window').width;
+        const swipeThreshold = screenWidth * 0.15; // 15% of screen width
+        
+        if (Math.abs(gestureState.dx) > swipeThreshold && imageUris.length > 1) {
+          if (gestureState.dx > 0) {
+            // Swipe right - go to previous
+            handlePreviousImage();
+          } else {
+            // Swipe left - go to next
+            handleNextImage();
+          }
+        }
+      },
+    });
+
     return (
       <View style={styles.container}>
         {imageUris.length > 0 && (
           <View style={styles.navigationContainer}>
-            {/* Left navigation button - only show if more than 1 image */}
-            {imageUris.length > 1 && (
-              <TouchableOpacity
-                style={buttonStyles.buttonSmPrimary}
-                onPress={handlePreviousImage}
-                activeOpacity={0.8}
-              >
-                <FontAwesomeIcon icon={faChevronLeft} size={16} color="#171717" />
-              </TouchableOpacity>
-            )}
-            
-            <View style={styles.stackContainer}>
+            <View style={styles.stackContainer} {...panResponder.panHandlers}>
               {/* Image Stack - Render from back to front */}
               {imageUris.map((uri, index) => {
                 const isCurrentImage = index === currentImageIndex;
@@ -260,17 +271,6 @@ const AchievementMediaWidget = forwardRef<AchievementMediaWidgetRef, Achievement
                 </Text>
               </View>
             </View>
-            
-            {/* Right navigation button - only show if more than 1 image */}
-            {imageUris.length > 1 && (
-              <TouchableOpacity
-                style={buttonStyles.buttonSmPrimary}
-                onPress={handleNextImage}
-                activeOpacity={0.8}
-              >
-                <FontAwesomeIcon icon={faChevronRight} size={16} color="#171717" />
-              </TouchableOpacity>
-            )}
           </View>
         )}
         
@@ -324,28 +324,29 @@ const AchievementMediaWidget = forwardRef<AchievementMediaWidgetRef, Achievement
 
 const styles = StyleSheet.create({
   container: {
-    alignItems: 'center',
+    width: '100%', // Ensure container takes full width
     backgroundColor: '#1E252C',
     paddingVertical: 16,
   },
   navigationContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 12, // Reduced since buttons now have their own margin
+    width: '100%', // Full width like input fields
+    marginBottom: 12,
   },
   stackContainer: {
     position: 'relative',
-    marginHorizontal: 8, // Reduced since buttons now have their own margin
-    width: 250,
-    height: 188,
+    width: '100%', // Full width to match container
+    height: 250, // Increased height for better proportions
   },
   mediaButtonsContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 16, // Space between camera and pictures buttons
+    justifyContent: 'center', // Center buttons horizontally
+    gap: 8, // Space between camera and pictures buttons
   },
   stackedImageContainer: {
     position: 'absolute',
+    width: '100%', // Full width of stack container
+    height: '100%', // Full height of stack container
     borderRadius: 8,
     overflow: 'hidden',
     elevation: 3,
@@ -358,8 +359,8 @@ const styles = StyleSheet.create({
     shadowRadius: 3.84,
   },
   stackedImage: {
-    width: 250,
-    height: 188,
+    width: '100%',
+    height: '100%',
     resizeMode: 'cover',
   },
   imageIndicator: {

@@ -11,11 +11,12 @@
 import React, { useState } from 'react';
 import { View, Text, Image, StyleSheet, ScrollView, PanResponder, Dimensions } from 'react-native';
 import { AchievementItem } from '../services/responses/GetAchievementItemsResponse';
+import { AchievementDetail } from '../services/responses/GetAchievementDetailResponse';
 import { SkillDisplayWidget } from '../../skills/components/SkillDisplayWidget';
 import { SocialDisplayWidget } from '../../social/components/SocialDisplayWidget';
 
 interface AchievementDetailsWidgetProps {
-  achievement: AchievementItem;
+  achievement: AchievementItem | AchievementDetail;
 }
 
 export const AchievementDetailsWidget: React.FC<AchievementDetailsWidgetProps> = ({ 
@@ -98,36 +99,53 @@ export const AchievementDetailsWidget: React.FC<AchievementDetailsWidgetProps> =
       {hasMedia && (
         <View style={styles.mediaContainer}>
           <View style={styles.mediaGallery} {...panResponder.panHandlers}>
-            {/* Current Media with swipe support */}
-            <View style={styles.mediaImageContainer}>
-              <Image 
-                source={{ uri: achievement.media[currentMediaIndex].mediaUrl }}
-                style={styles.mediaImage}
-                resizeMode="cover"
-              />
-              
-              {/* Media Counter */}
-              {hasMultipleMedia && (
-                <View style={styles.mediaCounter}>
-                  <Text style={styles.mediaCounterText}>
-                    {currentMediaIndex + 1} / {achievement.media.length}
-                  </Text>
+            {/* Stacking Image View */}
+            {achievement.media.map((mediaItem, index) => {
+              const isCurrentImage = index === currentMediaIndex;
+              const stackIndex = achievement.media.length - 1 - index; // Reverse for proper stacking
+
+              return (
+                <View
+                  key={index}
+                  style={[
+                    styles.stackedImageContainer,
+                    {
+                      zIndex: isCurrentImage ? achievement.media.length + 1 : stackIndex,
+                      top: isCurrentImage ? 0 : stackIndex * 6,
+                      left: isCurrentImage ? 0 : stackIndex * 3,
+                      opacity: isCurrentImage ? 1 : 0.7 - (stackIndex * 0.1),
+                    },
+                  ]}
+                >
+                  <Image
+                    source={{ uri: mediaItem.mediaUrl }}
+                    style={styles.stackedImage}
+                    resizeMode="cover"
+                  />
                 </View>
-              )}
-            </View>
+              );
+            })}
+
+            {/* Media Counter */}
+            {hasMultipleMedia && (
+              <View style={styles.mediaCounter}>
+                <Text style={styles.mediaCounterText}>
+                  {currentMediaIndex + 1} / {achievement.media.length}
+                </Text>
+              </View>
+            )}
           </View>
         </View>
       )}
-      
+
       {/* Social Display */}
       <View style={styles.socialContainer}>
         <SocialDisplayWidget size="sm" />
       </View>
-      
+
       {/* Skills Display */}
       {achievement.skills && achievement.skills.length > 0 && (
         <View style={styles.skillsContainer}>
-          {/* <Text style={styles.skillsLabel}>Skills</Text> */}
           <SkillDisplayWidget 
             selectedSkills={achievement.skills}
             layout="flat"
@@ -170,19 +188,29 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   mediaGallery: {
-    width: '100%',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  mediaImageContainer: {
-    width: '100%',
     position: 'relative',
-  },
-  mediaImage: {
     width: '100%',
-    height: 200,
+    height: 250, // Define height for the stack container like in AchievementMediaWidget
+  },
+  stackedImageContainer: {
+    position: 'absolute',
+    width: '100%',
+    height: '100%', // Fill the mediaGallery container
     borderRadius: 12,
-    backgroundColor: '#2F353C',
+    overflow: 'hidden',
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+  },
+  stackedImage: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'cover',
   },
   mediaCounter: {
     position: 'absolute',

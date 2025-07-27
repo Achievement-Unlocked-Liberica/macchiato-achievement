@@ -6,7 +6,7 @@
 
 import { buildApiUrl, apiSecureFetch, ApiResponse, ApiError } from '../../common/services/apiConfig';
 import { CreateAchievementCommand, UploadAchievementMediaCommand } from './commands';
-import { CreateAchievementResponse, UploadAchievementMediaResponse, GetAchievementItemsResponse } from './responses';
+import { CreateAchievementResponse, UploadAchievementMediaResponse, GetAchievementItemsResponse, GetAchievementDetailResponse } from './responses';
 import { LATEST_ACHIEVEMENTS_LIMIT } from '../../common/constants/achievementConstants';
 
 export class AchievementService {
@@ -159,7 +159,7 @@ export class AchievementService {
     console.log('🔄 AchievementService.getLatestAchievements() called');
 
     try {
-      const url = buildApiUrl(`/api/qry/v1/achievement/latest?size=sm&limit=${LATEST_ACHIEVEMENTS_LIMIT}`);
+      const url = buildApiUrl(`/api/qry/achievement/latest?size=sm&limit=${LATEST_ACHIEVEMENTS_LIMIT}`);
       console.log('🌐 API URL:', url);
 
       const requestOptions: RequestInit = {
@@ -219,6 +219,71 @@ export class AchievementService {
       };
     } catch (error) {
       console.error('❌ Failed to get latest achievements:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Get achievement detail by entity key
+   */
+  static async getAchievementDetail(entityKey: string): Promise<GetAchievementDetailResponse> {
+    console.log('🎯 AchievementService.getAchievementDetail() called');
+    console.log('📋 Entity Key:', entityKey);
+
+    try {
+      const url = buildApiUrl(`/api/qry/achievement/detail?size=lg&entityKey=${entityKey}`);
+      console.log('🌐 API URL:', url);
+
+      const requestOptions: RequestInit = {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-API-Version': '1',
+        },
+      };
+
+      console.log('📡 Making API request...');
+      const response = await apiSecureFetch(url, requestOptions);
+
+      if (!response.ok) {
+        console.error('❌ HTTP Error Response');
+        
+        let errorData = '';
+        let errorDetails = null;
+        
+        try {
+          errorData = await response.text();
+          console.log('📄 Error response text:', errorData);
+          
+          if (errorData) {
+            try {
+              errorDetails = JSON.parse(errorData);
+              console.log('📊 Error response JSON:', errorDetails);
+            } catch (parseError) {
+              console.log('⚠️ Could not parse error response as JSON');
+            }
+          }
+        } catch (textError) {
+          console.error('❌ Could not read error response text:', textError);
+        }
+        
+        const apiError = new ApiError(
+          `HTTP ${response.status}: ${response.statusText}`,
+          response.status,
+          errorDetails
+        );
+        
+        console.error('💥 Throwing ApiError:', apiError);
+        throw apiError;
+      }
+
+      console.log('✅ Successful response, parsing JSON...');
+      const result = await response.json();
+      console.log('📊 API response data:', JSON.stringify(result, null, 2));
+      
+      return result as GetAchievementDetailResponse;
+    } catch (error) {
+      console.error('❌ Failed to get achievement detail:', error);
       throw error;
     }
   }
