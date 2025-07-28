@@ -9,11 +9,12 @@
  */
 
 import React, { useState } from 'react';
-import { View, Text, Image, StyleSheet, ScrollView, PanResponder, Dimensions } from 'react-native';
+import { View, Text, Image, StyleSheet, ScrollView, PanResponder, Dimensions, TouchableOpacity } from 'react-native';
 import { AchievementItem } from '../services/responses/GetAchievementItemsResponse';
 import { AchievementDetail } from '../services/responses/GetAchievementDetailResponse';
 import { SkillDisplayWidget } from '../../skills/components/SkillDisplayWidget';
 import { SocialDisplayWidget } from '../../social/components/SocialDisplayWidget';
+import { AchievementPictureWidget } from './AchievementPictureWidget';
 
 interface AchievementDetailsWidgetProps {
   achievement: AchievementItem | AchievementDetail;
@@ -23,6 +24,8 @@ export const AchievementDetailsWidget: React.FC<AchievementDetailsWidgetProps> =
   achievement
 }) => {
   const [currentMediaIndex, setCurrentMediaIndex] = useState(0);
+  const [fullScreenVisible, setFullScreenVisible] = useState(false);
+  const [fullScreenImageUri, setFullScreenImageUri] = useState('');
 
   // Format the completed date
   const formatCompletedDate = (dateString?: string) => {
@@ -57,11 +60,23 @@ export const AchievementDetailsWidget: React.FC<AchievementDetailsWidgetProps> =
     }
   };
 
+  // Handle opening full-screen image view
+  const handleImagePress = (imageUri: string) => {
+    setFullScreenImageUri(imageUri);
+    setFullScreenVisible(true);
+  };
+
+  // Handle closing full-screen image view
+  const handleCloseFullScreen = () => {
+    setFullScreenVisible(false);
+    setFullScreenImageUri('');
+  };
+
   // Pan responder for swipe gestures
   const panResponder = PanResponder.create({
     onMoveShouldSetPanResponder: (evt, gestureState) => {
-      // Only respond to horizontal swipes
-      return Math.abs(gestureState.dx) > Math.abs(gestureState.dy) && Math.abs(gestureState.dx) > 10;
+      // Only respond to horizontal swipes with sufficient movement
+      return Math.abs(gestureState.dx) > Math.abs(gestureState.dy) && Math.abs(gestureState.dx) > 20;
     },
     onPanResponderRelease: (evt, gestureState) => {
       const screenWidth = Dimensions.get('window').width;
@@ -117,11 +132,17 @@ export const AchievementDetailsWidget: React.FC<AchievementDetailsWidgetProps> =
                     },
                   ]}
                 >
-                  <Image
-                    source={{ uri: mediaItem.mediaUrl }}
-                    style={styles.stackedImage}
-                    resizeMode="cover"
-                  />
+                  <TouchableOpacity
+                    onPress={() => handleImagePress(mediaItem.mediaUrl)}
+                    activeOpacity={0.8}
+                    style={styles.imageWrapper}
+                  >
+                    <Image
+                      source={{ uri: mediaItem.mediaUrl }}
+                      style={styles.stackedImage}
+                      resizeMode="cover"
+                    />
+                  </TouchableOpacity>
                 </View>
               );
             })}
@@ -157,6 +178,12 @@ export const AchievementDetailsWidget: React.FC<AchievementDetailsWidgetProps> =
       {/* Horizontal Line */}
       <View style={styles.dividerLine} />
 
+      {/* Full Screen Image Viewer */}
+      <AchievementPictureWidget
+        visible={fullScreenVisible}
+        imageUri={fullScreenImageUri}
+        onClose={handleCloseFullScreen}
+      />
     </ScrollView>
   );
 };
@@ -189,7 +216,7 @@ const styles = StyleSheet.create({
     fontStyle: 'italic',
   },
   mediaContainer: {
-    marginBottom: 8,
+    marginBottom: 16,
   },
   mediaGallery: {
     position: 'relative',
@@ -215,6 +242,10 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
     resizeMode: 'cover',
+  },
+  imageWrapper: {
+    width: '100%',
+    height: '100%',
   },
   mediaCounter: {
     position: 'absolute',
