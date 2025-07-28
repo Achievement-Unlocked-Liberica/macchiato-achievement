@@ -37,7 +37,7 @@ macchiato/                          # Main project folder
 │   │   ├── gifs/
 │   │   ├── videos/
 │   │   ├── icons/
-│   │   │   └── au icon xs.jpg     # App logo
+│   │   │   └── au icon xs.png     # App logo
 │   │   └── templates/
 │   └── README.md                  # Folder structure docs
 ├── App.tsx                        # Main app entry point with navigation

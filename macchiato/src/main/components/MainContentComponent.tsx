@@ -61,7 +61,7 @@ export default function MainContentComponent() {
       ) : (
         // Show background image when user is not authenticated or profile not loaded
         <ImageBackground
-          source={require('../../resources/icons/au icon sm.jpg')}
+          source={require('../../resources/icons/au icon sm.png')}
           style={styles.backgroundImage}
           imageStyle={styles.backgroundImageStyle}
           resizeMode="center"

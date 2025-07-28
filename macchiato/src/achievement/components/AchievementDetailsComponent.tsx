@@ -13,6 +13,7 @@ import { AchievementItem } from '../services/responses/GetAchievementItemsRespon
 import { AchievementDetail } from '../services/responses/GetAchievementDetailResponse';
 import { AchievementDetailsWidget } from './AchievementDetailsWidget';
 import { useAchievement } from '../hooks/useAchievement';
+import { buttonStyles } from '../../common/styles/buttonStyles';
 
 interface AchievementDetailsComponentProps {
   achievement: AchievementItem;
@@ -92,10 +93,11 @@ export const AchievementDetailsComponent: React.FC<AchievementDetailsComponentPr
     <View style={styles.container}>
       {/* Back button */}
       {onBack && (
-        <TouchableOpacity style={styles.backButton} onPress={onBack} activeOpacity={0.7}>
-          <FontAwesomeIcon icon={faArrowLeft} size={20} color="#FCFCFC" />
-          <Text style={styles.backText}>Back to List</Text>
+        <View style={styles.topButtonContainer}>
+        <TouchableOpacity style={buttonStyles.buttonSmPrimary} onPress={onBack}>
+          <FontAwesomeIcon icon={faArrowLeft} size={12} color="#171717" />
         </TouchableOpacity>
+        </View>
       )}
       
       {/* Loading state */}
@@ -128,16 +130,23 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#1E252C',
   },
+
+  topButtonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    //alignItems: 'center',
+    //backgroundColor: 'rgba(30, 37, 44, 0.5)', // 50% translucent
+    //borderRadius: 8,
+    padding: 4,
+    marginTop: 8,    // Keep the top margin
+    minHeight: 48,   // Keep the minimum height
+  },
+
   backButton: {
     flexDirection: 'row',
     alignItems: 'center',
     padding: 16,
     paddingBottom: 8,
-  },
-  backText: {
-    color: '#FCFCFC',
-    fontSize: 16,
-    marginLeft: 8,
   },
   loadingContainer: {
     flex: 1,

@@ -19,15 +19,15 @@ interface AchievementDetailsWidgetProps {
   achievement: AchievementItem | AchievementDetail;
 }
 
-export const AchievementDetailsWidget: React.FC<AchievementDetailsWidgetProps> = ({ 
-  achievement 
+export const AchievementDetailsWidget: React.FC<AchievementDetailsWidgetProps> = ({
+  achievement
 }) => {
   const [currentMediaIndex, setCurrentMediaIndex] = useState(0);
 
   // Format the completed date
   const formatCompletedDate = (dateString?: string) => {
     if (!dateString) return 'Date not available';
-    
+
     try {
       const date = new Date(dateString);
       return date.toLocaleDateString('en-US', {
@@ -43,7 +43,7 @@ export const AchievementDetailsWidget: React.FC<AchievementDetailsWidgetProps> =
   // Handle media navigation
   const handlePreviousMedia = () => {
     if (achievement.media && achievement.media.length > 1) {
-      setCurrentMediaIndex(prev => 
+      setCurrentMediaIndex(prev =>
         prev === 0 ? achievement.media.length - 1 : prev - 1
       );
     }
@@ -51,7 +51,7 @@ export const AchievementDetailsWidget: React.FC<AchievementDetailsWidgetProps> =
 
   const handleNextMedia = () => {
     if (achievement.media && achievement.media.length > 1) {
-      setCurrentMediaIndex(prev => 
+      setCurrentMediaIndex(prev =>
         prev === achievement.media.length - 1 ? 0 : prev + 1
       );
     }
@@ -66,7 +66,7 @@ export const AchievementDetailsWidget: React.FC<AchievementDetailsWidgetProps> =
     onPanResponderRelease: (evt, gestureState) => {
       const screenWidth = Dimensions.get('window').width;
       const swipeThreshold = screenWidth * 0.2; // 20% of screen width
-      
+
       if (Math.abs(gestureState.dx) > swipeThreshold && hasMultipleMedia) {
         if (gestureState.dx > 0) {
           // Swipe right - go to previous
@@ -86,15 +86,15 @@ export const AchievementDetailsWidget: React.FC<AchievementDetailsWidgetProps> =
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
       {/* Title */}
       <Text style={styles.title}>{achievement.title}</Text>
-      
+
       {/* Description */}
-      <Text style={styles.description}>{achievement.description}</Text>
-      
+      <Text style={styles.description} numberOfLines={4} ellipsizeMode="tail">{achievement.description}</Text>
+
       {/* Completed Date */}
       <Text style={styles.completedDate}>
         {formatCompletedDate(achievement.completedDate)}
       </Text>
-      
+
       {/* Media Gallery */}
       {hasMedia && (
         <View style={styles.mediaContainer}>
@@ -111,7 +111,7 @@ export const AchievementDetailsWidget: React.FC<AchievementDetailsWidgetProps> =
                     styles.stackedImageContainer,
                     {
                       zIndex: isCurrentImage ? achievement.media.length + 1 : stackIndex,
-                      top: isCurrentImage ? 0 : stackIndex * 6,
+                      top: isCurrentImage ? 0 : stackIndex * 3,
                       left: isCurrentImage ? 0 : stackIndex * 3,
                       opacity: isCurrentImage ? 1 : 0.7 - (stackIndex * 0.1),
                     },
@@ -138,21 +138,25 @@ export const AchievementDetailsWidget: React.FC<AchievementDetailsWidgetProps> =
         </View>
       )}
 
-      {/* Social Display */}
-      <View style={styles.socialContainer}>
-        <SocialDisplayWidget size="sm" />
-      </View>
-
       {/* Skills Display */}
       {achievement.skills && achievement.skills.length > 0 && (
         <View style={styles.skillsContainer}>
-          <SkillDisplayWidget 
+          <SkillDisplayWidget
             selectedSkills={achievement.skills}
             layout="flat"
             size="lg"
           />
         </View>
       )}
+
+      {/* Social Display */}
+      <View style={styles.socialContainer}>
+        <SocialDisplayWidget size="md" />
+      </View>
+
+      {/* Horizontal Line */}
+      <View style={styles.dividerLine} />
+
     </ScrollView>
   );
 };
@@ -161,7 +165,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#1E252C',
-    padding: 16,
+    padding: 8,
   },
   title: {
     fontSize: 24,
@@ -174,18 +178,18 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#9FB3C8',
     lineHeight: 24,
-    marginBottom: 16,
+    marginBottom: 12,
     textAlign: 'center',
   },
   completedDate: {
     fontSize: 14,
-    color: '#737373',
-    marginBottom: 20,
+    color: '#FCFCFC',
+    marginBottom: 12,
     textAlign: 'center',
     fontStyle: 'italic',
   },
   mediaContainer: {
-    marginBottom: 20,
+    marginBottom: 8,
   },
   mediaGallery: {
     position: 'relative',
@@ -227,11 +231,11 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   socialContainer: {
-    marginBottom: 20,
+    marginBottom: 16,
     alignItems: 'center',
   },
   skillsContainer: {
-    marginBottom: 20,
+    marginBottom: 16,
   },
   skillsLabel: {
     fontSize: 16,
@@ -239,6 +243,14 @@ const styles = StyleSheet.create({
     color: '#FCFCFC',
     marginBottom: 8,
     textAlign: 'center',
+  },
+  dividerLine: {
+    height: 2,
+    backgroundColor: '#2E3842',
+    marginVertical: 8,
+    width: '100%',
+    alignSelf: 'center',
+    borderRadius: 1,
   },
 });
 

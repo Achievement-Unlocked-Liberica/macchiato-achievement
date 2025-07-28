@@ -242,7 +242,7 @@ const AchievementMediaWidget = forwardRef<AchievementMediaWidgetRef, Achievement
                       styles.stackedImageContainer,
                       {
                         zIndex: isCurrentImage ? imageUris.length + 1 : stackIndex,
-                        top: isCurrentImage ? 0 : stackIndex * 6,
+                        top: isCurrentImage ? 0 : stackIndex * 3,
                         left: isCurrentImage ? 0 : stackIndex * 3,
                         opacity: isCurrentImage ? 1 : 0.7 - (stackIndex * 0.1),
                       }

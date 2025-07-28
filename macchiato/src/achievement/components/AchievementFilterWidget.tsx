@@ -50,12 +50,12 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     justifyContent: 'flex-end',
-    alignItems: 'center',
-    backgroundColor: 'rgba(30, 37, 44, 0.5)', // 50% translucent
-    borderRadius: 8,
+    // alignItems: 'center',
+    // backgroundColor: 'rgba(30, 37, 44, 0.5)', // 50% translucent
+    // borderRadius: 8,
     padding: 4,
     marginTop: 8,    // Keep the top margin
-    minHeight: 44,   // Keep the minimum height
+    minHeight: 48,   // Keep the minimum height
   },
 });
 

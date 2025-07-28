@@ -89,7 +89,9 @@ export const SkillDisplayWidget: React.FC<SkillDisplayWidgetProps> = ({
     return (
       <View style={styles.flatContainer}>
         {SKILLS.map((skill) => 
-          renderSkillCircle(skill, { marginHorizontal: 2 })
+          renderSkillCircle(skill, { 
+        marginHorizontal: size === 'sm' ? 2 : size === 'md' ? 4 : size === 'lg' ? 8 : 2 
+          })
         )}
       </View>
     );

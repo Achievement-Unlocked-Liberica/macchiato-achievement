@@ -67,7 +67,7 @@ const AchievementItemWidget: React.FC<AchievementItemWidgetProps> = ({ achieveme
       return { uri: imageUrl };
     }
     // Use application logo as fallback
-    return require('../../resources/icons/au icon sm.jpg');
+    return require('../../resources/icons/au icon sm.png');
   };
 
   // Render skills using the SkillDisplayWidget

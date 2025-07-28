@@ -16,7 +16,7 @@ export default function MainHeaderComponent({
       {/* Logo */}
       {showLogo && (
         <Image 
-          source={require('../../resources/icons/au icon xs.jpg')}
+          source={require('../../resources/icons/au icon xs.png')}
           style={styles.logo}
           resizeMode="contain"
         />
