@@ -31,7 +31,7 @@ const AchievementGridComponent: React.FC<AchievementGridComponentProps> = ({
 }) => {
   // Get screen width for responsive grid
   const screenWidth = Dimensions.get('window').width;
-  const itemWidth = (screenWidth - 36) / 3; // 3 columns with margins
+  const itemWidth = (screenWidth - 48) / 3; // 3 columns with margins
 
   const renderAchievementCard = ({ item }: { item: AchievementItem }) => (
     <View style={[styles.cardContainer, { width: itemWidth }]}>
